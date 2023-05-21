@@ -43,7 +43,7 @@
 # 
 # 
 
-# In[1]:
+# In[ ]:
 
 
 get_ipython().system('unzip  -qO UTF-8 data/data211908/地铁数据.zip -d ./data')
@@ -56,7 +56,7 @@ get_ipython().system('unzip  -qO UTF-8 data/data211908/地铁数据.zip -d ./dat
 # 2.利用正则提取站点字母代码，方便后面对数据进行筛选分类（当然也可以不做这一步，但后面筛选字段时会比较麻烦）  
 # <a style="color:red;font-weight:bold">3.（重要）将列名转换为英文命名（"Time", "Station", "InNum", "OutNum"），预测完成后数据提交格式也是这4个字段！</a>
 
-# In[25]:
+# In[2]:
 
 
 import re
@@ -66,21 +66,13 @@ df = pd.read_csv("data/客流量数据.csv")
 df.head()
 
 
-# In[23]:
+# In[ ]:
 
 
 def extract_station(x):
     station = re.compile("([A-Z])站").findall(x)
-    # print('in extract_station:', station)
     if len(station)>0:
         return station[0]
-
-# print(extract_station('BZHAN站E站'))
-
-
-# In[26]:
-
-
 
 df["时间区段"] = df["时间区段"].apply(lambda x:x.split("-")[0])
 df["站点"] = df["站点"].apply(extract_station)
@@ -94,7 +86,7 @@ df.head()
 # # 5.模型训练
 # ## 5.1 安装PaddleTS环境
 
-# In[27]:
+# In[ ]:
 
 
 get_ipython().system('pip install paddlets')
@@ -102,7 +94,7 @@ get_ipython().system('pip install paddlets')
 
 # ## 5.2 引入依赖包
 
-# In[28]:
+# In[ ]:
 
 
 import paddle
@@ -119,7 +111,7 @@ warnings.filterwarnings('ignore')
 #   
 # 首先，我们把C站点的数据单独提取。
 
-# In[29]:
+# In[36]:
 
 
 station = "C" # 站点
@@ -133,7 +125,7 @@ dataset_df.head()
 # 
 # 因为时序预测要求数据连续，但广州地铁的运营时间为6:00-24:00，在0:00-6:00时间段存在数据空白，因此我们需要对这一部分的数据进行填充。PaddleTS的TSDataset为我们提供了`fill_missing_dates`参数，我们可以利用这个参数，将缺失值填充为0。
 
-# In[30]:
+# In[ ]:
 
 
 dataset_df = TSDataset.load_from_dataframe(
@@ -148,7 +140,7 @@ dataset_df = TSDataset.load_from_dataframe(
 
 # 我们可以利用TSDataset自带的.plot方法观测一下输入数据。
 
-# In[31]:
+# In[8]:
 
 
 dataset_df.plot()
@@ -156,7 +148,7 @@ dataset_df.plot()
 
 # 可以看出，地铁客流量有一定的波动规律，存在明显的高峰和低谷，我们可以用.summary()函数查看数据的分布情况。
 
-# In[32]:
+# In[9]:
 
 
 dataset_df.summary()
@@ -165,7 +157,7 @@ dataset_df.summary()
 # ## 5.5 分割数据集
 # 上面我们介绍了`TSDataset`是支持数据切片的，但与python原生和numpy的切片操作不同，TSDataset的切片操作更便捷，可以直接通过时间序列进行切片。下面我们将数据以2023年2月5日23时45分为分界时间节点分为`训练集`和`验证集`，再将验证集以2023年3月29日23时45分为节点分出`测试集`供后面数据模型效果验证。
 
-# In[33]:
+# In[ ]:
 
 
 dataset_train, dataset_val_test = dataset_df.split("2023-02-05 23:45:00")
@@ -175,7 +167,7 @@ dataset_val, dataset_test = dataset_val_test.split("2023-03-29 23:45:00")
 # ## 5.6 数据标准化
 # 为了让模型训练得到更好的拟合效果以及更高的拟合速度，我们需要对数据进行标准化缩放，这里使用的是PaddleTS自带的`StandardScaler`函数，以训练集数据的最大最小值为基础，对训练集、验证集和测试集分别做标准化处理。
 
-# In[34]:
+# In[ ]:
 
 
 scaler = StandardScaler()
@@ -201,7 +193,7 @@ dataset_test_scaled = scaler.transform(dataset_test)
 # - optimizer_params：训练参数，主要配置learning_rate
 # 
 
-# In[35]:
+# In[ ]:
 
 
 paddle.seed(2023)
@@ -217,7 +209,7 @@ model = LSTNetRegressor(
 
 # 模型配置定义后，通过一行代码就可以开始模型训练了。
 
-# In[36]:
+# In[ ]:
 
 
 model.fit(dataset_train_scaled, dataset_val_scaled)
@@ -226,7 +218,7 @@ model.fit(dataset_train_scaled, dataset_val_scaled)
 # ## 5.8 数据回测
 # 模型训练完后，我们用测试集的数据对模型的效果进行回测，以此检验模型预测数据与真实数据之间的误差。这一步我们用的是PaddleTS自带的`backtest`函数，return_predicts参数设置为True，可以返回预测结果方便我们与真实数据进行可视化对比。
 
-# In[37]:
+# In[ ]:
 
 
 from paddlets.utils import backtest
@@ -238,20 +230,13 @@ mae, pred = backtest(data=dataset_test_scaled,
 )
 
 
-# In[38]:
+# In[25]:
 
 
 _, ground_truth = dataset_test_scaled.split("2023-03-30 23:45:00")
 
 
-# In[41]:
-
-
-ground_truth.plot(y="power")
-print(ground_truth.head())
-
-
-# In[39]:
+# In[26]:
 
 
 pred.plot(add_data = ground_truth)
