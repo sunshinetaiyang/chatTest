@@ -229,11 +229,7 @@ get_ipython().system(' ls ~/data -l')
 get_ipython().run_line_magic('cd', '~/work/PaddleDetection/dataset/roadsign_voc/')
 get_ipython().system(' pwd')
 get_ipython().system(' ls -h')
-
-
 # In[13]:
-
-
 # copy roadsign_voc.tar and extract
 get_ipython().system(' cp ~/data/data49531/roadsign_voc.tar .')
 get_ipython().system(' tar -xvf roadsign_voc.tar')
@@ -248,8 +244,7 @@ get_ipython().system(' cat ./annotations/road650.xml')
 
 
 # #### 2. coco格式数介绍
-# 
-# coco数据格式，是指将所有训练图像的标注都存放到一个json文件中。数据以字典嵌套的形式存放。
+# # coco数据格式，是指将所有训练图像的标注都存放到一个json文件中。数据以字典嵌套的形式存放。
 # 
 # json文件中存放了 `info licenses images annotations categories`的信息:
 # 
@@ -273,17 +268,11 @@ get_ipython().system(' cat ./annotations/road650.xml')
 # 将`~/data/data49531/roadsign_coco.tar`解压到`PaddleDetection/dataset/roadsign_coco`下
 
 # In[15]:
-
-
 get_ipython().run_line_magic('cd', '~/work/PaddleDetection/dataset/')
 get_ipython().system(' mkdir roadsign_coco')
 get_ipython().run_line_magic('cd', '~/work/PaddleDetection/dataset/roadsign_coco/')
 get_ipython().system(' pwd')
-
-
 # In[16]:
-
-
 # copy roadsign_coco.tar and extract
 get_ipython().system(' cp ~/data/data52968/roadsign_coco.tar .')
 get_ipython().system(' tar -xf roadsign_coco.tar')
@@ -291,13 +280,8 @@ get_ipython().system(' rm -rf roadsign_coco.tar')
 
 
 # In[17]:
-
-
 get_ipython().system(' cat ./annotations/train.json')
-
-
 # In[18]:
-
 
 # 查看一条数据
 import json
@@ -347,7 +331,10 @@ get_ipython().system(' ls configs/hw_configs/')
 # 选择配置开始训练。可以通过 -o 选项覆盖配置文件中的参数
 
 # faster_rcnn_r50_vd_fpn
-get_ipython().system(' python -u tools/train.py -c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml -o use_gpu=True --eval')
+get_ipython().system(' 
+python -u tools/train.py 
+-c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml 
+-o use_gpu=True --eval')
 
 # yolov3
 #! python -u tools/train.py -c configs/hw_configs/yolov3_mobilenet_v1_roadsign_voc_template.yml -o use_gpu=True --eval
@@ -366,13 +353,18 @@ get_ipython().system(' python -u tools/train.py -c configs/hw_configs/faster_rcn
 # 选择配置开始训练。可以通过 -o 选项覆盖配置文件中的参数 vdl_log_dir 设置vdl日志文件保存路径
 
 # faster_rcnn_r50_vd_fpn
-get_ipython().system(' python -u tools/train.py -c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml -o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval')
+get_ipython().system(' python -u tools/train.py -c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml 
+-o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval')
 
 # yolov3
-#! python -u tools/train.py -c configs/hw_configs/yolov3_mobilenet_v1_roadsign_voc_template.yml -o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval
+#! python -u tools/train.py 
+-c configs/hw_configs/yolov3_mobilenet_v1_roadsign_voc_template.yml 
+-o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval
 
 # fcos
-#! python -u tools/train.py -c configs/hw_configs/fcos_r50_roadsign_coco_template.yml -o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval
+#! python -u tools/train.py 
+-c configs/hw_configs/fcos_r50_roadsign_coco_template.yml 
+-o use_gpu=True --use_vdl=True --vdl_log_dir=vdl_dir/scalar --eval
 
 
 # ## 评估和预测
@@ -392,7 +384,11 @@ get_ipython().system(' python -u tools/train.py -c configs/hw_configs/faster_rcn
 # 评估
 
 # faster_rcnn_r50_vd_fpn
-get_ipython().system(' python -u tools/eval.py -c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml -o use_gpu=True weights=https://paddlemodels.bj.bcebos.com/object_detection/faster_r50_fpn_best_model_roadsign.pdparams')
+get_ipython().system(' 
+python -u tools/eval.py 
+-c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml 
+-o use_gpu=True 
+weights=https://paddlemodels.bj.bcebos.com/object_detection/faster_r50_fpn_best_model_roadsign.pdparams')
 
 # yolov3
 #! python -u tools/eval.py -c configs/hw_configs/yolov3_mobilenet_v1_roadsign_coco_template.yml -o use_gpu=True weights=https://paddlemodels.bj.bcebos.com/object_detection/yolov3_best_model_roadsign.pdparams
@@ -411,7 +407,12 @@ get_ipython().system(' python -u tools/eval.py -c configs/hw_configs/faster_rcnn
 img_path = './dataset/roadsign_voc/images/road554.png'
 
 # faster_rcnn_r50_vd_fpn
-get_ipython().system(' python tools/infer.py -c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml -o use_gpu=True weights=https://paddlemodels.bj.bcebos.com/object_detection/faster_r50_fpn_best_model_roadsign.pdparams --infer_img=dataset/roadsign_voc/images/road554.png')
+get_ipython().system(' 
+python tools/infer.py 
+-c configs/hw_configs/faster_rcnn_r50_vd_fpn_roadsign_coco_template.yml 
+-o use_gpu=True 
+weights=https://paddlemodels.bj.bcebos.com/object_detection/faster_r50_fpn_best_model_roadsign.pdparams 
+--infer_img=dataset/roadsign_voc/images/road554.png')
 
 # yolov3
 #! python tools/infer.py -c configs/hw_configs/yolov3_mobilenet_v1_roadsign_voc_template.yml -o use_gpu=True weights=https://paddlemodels.bj.bcebos.com/object_detection/yolov3_best_model_roadsign.pdparams --infer_img=dataset/roadsign_voc/images/road554.png

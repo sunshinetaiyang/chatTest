@@ -15,7 +15,8 @@
 
 # # 解压数据脚本,第一次运行时打开注释,将文件解压到work目录下
 # !unzip -q -d  /home/aistudio/work /home/aistudio/data/data19638/insects.zip
-get_ipython().system('rm -rf /home/aistudio/work/insects/test/images/.ipynb_checkpoints')
+get_ipython().system('
+rm -rf /home/aistudio/work/insects/test/images/.ipynb_checkpoints')
 
 
 # In[1]:
