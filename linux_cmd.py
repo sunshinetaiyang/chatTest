@@ -8,7 +8,8 @@ jupyter nbconvert --to=python main.ipynb
 
 # 查找查询类
 # 按文件名查询
-find / -name "a.txt"
+find dir_a -name "*xyz*"
+
 # 查询字符串
 grep "val_imgID.txt" /path/to/dir_a/*
 
@@ -53,3 +54,29 @@ $realpath result.csv
 !unzip -oq ~/data/data212110/val.zip -d ~/data/CHECK
 unzip -lh yourfile.zip
 
+
+usage: infer.py [-h] --model_dir MODEL_DIR [--image_file IMAGE_FILE]
+                [--image_dir IMAGE_DIR] [--batch_size BATCH_SIZE]
+                [--video_file VIDEO_FILE] [--camera_id CAMERA_ID]
+                [--threshold THRESHOLD] [--output_dir OUTPUT_DIR]
+                [--run_mode RUN_MODE] [--device DEVICE] [--use_gpu USE_GPU]
+                [--run_benchmark RUN_BENCHMARK]
+                [--enable_mkldnn ENABLE_MKLDNN]
+                [--enable_mkldnn_bfloat16 ENABLE_MKLDNN_BFLOAT16]
+                [--cpu_threads CPU_THREADS] [--trt_min_shape TRT_MIN_SHAPE]
+                [--trt_max_shape TRT_MAX_SHAPE]
+                [--trt_opt_shape TRT_OPT_SHAPE]
+                [--trt_calib_mode TRT_CALIB_MODE] [--save_images SAVE_IMAGES]
+                [--save_mot_txts] [--save_mot_txt_per_img] [--scaled SCALED]
+                [--tracker_config TRACKER_CONFIG]
+                [--reid_model_dir REID_MODEL_DIR]
+                [--reid_batch_size REID_BATCH_SIZE] [--use_dark USE_DARK]
+                [--action_file ACTION_FILE] [--window_size WINDOW_SIZE]
+                [--random_pad RANDOM_PAD] [--save_results]
+                [--use_coco_category] [--slice_infer]
+                [--slice_size SLICE_SIZE [SLICE_SIZE ...]]
+                [--overlap_ratio OVERLAP_RATIO [OVERLAP_RATIO ...]]
+                [--combine_method COMBINE_METHOD]
+                [--match_threshold MATCH_THRESHOLD]
+                [--match_metric MATCH_METRIC]
+infer.py: error: unrecognized arguments: --save_txt=True
