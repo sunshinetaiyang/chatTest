@@ -40,6 +40,12 @@ ls -lh
 du -sh dir_a
 # 查看分列大小
 du -h dir_a
+# sort -hr 会将结果按照人类可读的格式和逆序（从大到小）排序。
+du -h ./* | sort -hr
+# 查找大于1GB的文件
+find /home/user/Documents -type f -size +1G
+
+
 
 
 $ pip list | grep paddle

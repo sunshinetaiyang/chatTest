@@ -624,3 +624,15 @@ FileNotFoundError: [Errno 2] No such file or directory: '/home/aistudio/val_imgI
 
 # 请点击[此处](https://ai.baidu.com/docs#/AIStudio_Project_Notebook/a38e5576)查看本环境基本用法.  <br>
 # Please click [here ](https://ai.baidu.com/docs#/AIStudio_Project_Notebook/a38e5576) for more detailed instructions. 
+
+model = hub.Module(
+    name='ernie_tiny',
+    version='2.0.1',
+    task='seq-cls',
+    load_checkpoint='./test_ernie_text_cls/best_model/model.pdparams',
+    label_map=label_map)
+results = model.predict(data, max_seq_len=50, batch_size=1, use_gpu=False)
+for idx, text in enumerate(data):
+    print('Data: {} \t Lable: {}'.format(text[0], results[idx]))
+    
+    
