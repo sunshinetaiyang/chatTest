@@ -6,9 +6,17 @@ $ du -sh img_classification_ckpt/
 
 jupyter nbconvert --to=python main.ipynb
 
+git clone https://hub.fastgit.xyz/author/repo
+https://doc.fastgit.org/zh-cn/guide.html#web-%E7%9A%84%E4%BD%BF%E7%94%A8
+
+# !cp -r /home/aistudio/coco_config/_base_  /home/aistudio/PaddleDetection/configs/rtdetr/
 # 查找查询类
 # 按文件名查询
 find dir_a -name "*xyz*"
+
+# 删除dir_A目录下除了*.txt之外的所有文件
+find dir_A ! -name '*.txt' -type f -delete
+find . ! -name '*odel*' -type f -delete
 
 # 查询字符串
 grep "val_imgID.txt" /path/to/dir_a/*
@@ -86,3 +94,10 @@ usage: infer.py [-h] --model_dir MODEL_DIR [--image_file IMAGE_FILE]
                 [--match_threshold MATCH_THRESHOLD]
                 [--match_metric MATCH_METRIC]
 infer.py: error: unrecognized arguments: --save_txt=True
+
+python -m pip install visualdl -i https://mirror.baidu.com/pypi/simple
+python -u tools/train.py -c configs/yolov3/yolov3_mobilenet_v1_roadsign.yml \
+                        --use_vdl=true \
+                        --vdl_log_dir=vdl_dir/scalar \
+                        --eval
+visualdl --logdir vdl_dir/scalar/ --host <host_IP> --port <port_num>

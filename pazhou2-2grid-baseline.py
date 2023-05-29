@@ -330,6 +330,9 @@ python -m paddle.distributed.launch
 --gpus 0,1,2,3 tools/train.py 
 -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml 
 --fleet --eval')
+# training on multi-GPU
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+python -m paddle.distributed.launch --gpus 0,1,2,3 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml --fleet --eval
 
 
 # In[22]:
@@ -339,6 +342,13 @@ python -m paddle.distributed.launch
 # %cd /home/aistudio/PaddleDetection/
 # # !export CUDA_VISIBLE_DEVICES=0
 # !python tools/train.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml --eval
+
+# 在GPU上预测一张图片
+export CUDA_VISIBLE_DEVICES=0
+python tools/infer.py 
+-c configs/ppyolo/ppyolo_r50vd_dcn_1x_coco.yml 
+-o use_gpu=true 
+weights=https://paddledet.bj.bcebos.com/models/ppyolo_r50vd_dcn_1x_coco.pdparams --infer_img=demo/000000014439.jpg
 
 
 # ### 5.4 模型评估
