@@ -142,7 +142,7 @@
 # In[2]:
 
 
-get_ipython().system('pip install paddlex')
+'pip install paddlex')
 
 
 # 通过 split_dataset 这个 API 按照 0.8：0.2 的比例划分训练集和验证集。
@@ -274,15 +274,15 @@ Image_size(indir)
 # In[4]:
 
 
-get_ipython().system('rm /home/aistudio/PaddleDetection/tools/x2coco.py')
-get_ipython().system('cp /home/aistudio/coco_config/x2coco.py /home/aistudio/PaddleDetection/tools/')
+'rm /home/aistudio/PaddleDetection/tools/x2coco.py')
+'cp /home/aistudio/coco_config/x2coco.py /home/aistudio/PaddleDetection/tools/')
 
 
 # In[5]:
 
 
 get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
-get_ipython().system('
+'
 python tools/x2coco.py         
 --dataset_type voc         
 --voc_anno_dir /home/aistudio/work/train/         
@@ -290,7 +290,7 @@ python tools/x2coco.py
 --voc_label_list /home/aistudio/work/train/labels.txt         
 --voc_out_name /home/aistudio/work/train/voc_train.json')
 # In[6]:
-get_ipython().system('
+'
 python tools/x2coco.py         
 --dataset_type voc         
 --voc_anno_dir /home/aistudio/work/train/         
@@ -301,21 +301,21 @@ python tools/x2coco.py
 
 # In[7]:
 # 替换配置文件
-get_ipython().system('
+'
 rm -rf /home/aistudio/PaddleDetection/configs/rtdetr/_base_')
-get_ipython().system('
+'
 rm /home/aistudio/PaddleDetection/configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml')
-get_ipython().system('
+'
 rm /home/aistudio/PaddleDetection/configs/runtime.yml')
-get_ipython().system('
+'
 rm /home/aistudio/PaddleDetection/configs/datasets/coco_detection.yml')
-get_ipython().system('
+'
 cp -r /home/aistudio/coco_config/_base_  /home/aistudio/PaddleDetection/configs/rtdetr/')
-get_ipython().system('
+'
 cp /home/aistudio/coco_config/rtdetr_hgnetv2_x_6x_coco.yml /home/aistudio/PaddleDetection/configs/rtdetr/')
-get_ipython().system('
+'
 cp /home/aistudio/coco_config/runtime.yml /home/aistudio/PaddleDetection/configs/')
-get_ipython().system('
+'
 cp /home/aistudio/coco_config/coco_detection.yml /home/aistudio/PaddleDetection/configs/datasets/')
 
 
@@ -324,8 +324,8 @@ cp /home/aistudio/coco_config/coco_detection.yml /home/aistudio/PaddleDetection/
 
 # training on multi-GPU
 get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
-get_ipython().system('export CUDA_VISIBLE_DEVICES=0,1,2,3')
-get_ipython().system('
+'export CUDA_VISIBLE_DEVICES=0,1,2,3')
+'
 python -m paddle.distributed.launch 
 --gpus 0,1,2,3 tools/train.py 
 -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml 
@@ -356,7 +356,7 @@ weights=https://paddledet.bj.bcebos.com/models/ppyolo_r50vd_dcn_1x_coco.pdparams
 # In[23]:
 
 
-get_ipython().system('python tools/eval.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml -o weights=output/rtdetr_hgnetv2_x_6x_coco/best_model.pdparams')
+'python tools/eval.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml -o weights=output/rtdetr_hgnetv2_x_6x_coco/best_model.pdparams')
 
 
 # **指标如下：**
@@ -379,7 +379,7 @@ get_ipython().system('python tools/eval.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x
 # In[ ]:
 
 
-get_ipython().system('python tools/export_model.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml --output_dir=./inference_model -o weights=output/rtdetr_hgnetv2_x_6x_coco/best_model')
+'python tools/export_model.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml --output_dir=./inference_model -o weights=output/rtdetr_hgnetv2_x_6x_coco/best_model')
 
 
 # ### 5.6 结果文件生成
@@ -404,7 +404,7 @@ get_ipython().system('python tools/export_model.py -c configs/rtdetr/rtdetr_hgne
 # In[ ]:
 
 
-get_ipython().system('python deploy/python/infer.py --model_dir=inference_model/rtdetr_hgnetv2_x_6x_coco --image_dir=/home/aistudio/data/val --device=GPU --output_dir infer_output --save_results')
+'python deploy/python/infer.py --model_dir=inference_model/rtdetr_hgnetv2_x_6x_coco --image_dir=/home/aistudio/data/val --device=GPU --output_dir infer_output --save_results')
 
 
 # 最后json文件中的一条数据如下图所示：

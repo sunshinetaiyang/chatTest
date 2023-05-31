@@ -50,6 +50,8 @@ du -sh dir_a
 du -h dir_a
 # sort -hr 会将结果按照人类可读的格式和逆序（从大到小）排序。
 du -h ./* | sort -hr
+# sort 从小到大
+du -h ./* | sort -h
 # 查找大于1GB的文件
 find /home/user/Documents -type f -size +1G
 
