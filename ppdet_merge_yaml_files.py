@@ -1,29 +1,3 @@
-
-
-# 查看COCO标注文件
-import json
-coco_anno = json.load(open('/home/aistudio/data/data_coco/annotations/train.json'))
-
-# coco_anno.keys
-print('keys:', coco_anno.keys())
-
-# 查看类别信息
-print('\n物体类别:', coco_anno['categories'])
-
-# 查看一共多少张图
-print('\n图像数量：', len(coco_anno['images']))
-
-# 查看一张图像信息
-print('\n图像信息：', coco_anno['images'][0])
-
-# 查看一共多少个目标物体
-print('\n标注物体数量：', len(coco_anno['annotations']))
-
-# 查看一条目标物体标注信息
-print('\n查看一条目标物体标注信息：', coco_anno['annotations'][0])
-
-
-
 import sys
 import os
 
