@@ -417,7 +417,6 @@ class Detector(object):
                         self.pred_config.labels,
                         output_dir=self.output_dir,
                         threshold=self.threshold)
-                    # print('in predict_image:单独一个result:', result)
             results.append(result)
             print('Test iter {}'.format(i))
         results = self.merge_batch_result(results)
@@ -469,76 +468,48 @@ class Detector(object):
         writer.release()
 
     def save_coco_results(self, image_list, results, use_coco_category=False):
-        # print('in save_coco_results: 传入参数', results)
-        # print('in save_coco_results: 传入参数image_list', image_list)
-        # print('in save_coco_results: 传入参数use_coco_category', use_coco_category)
         fr = open('/home/aistudio/val_imgID.txt', 'r')
         dic = {}
         keys = [] # 用来存储读取的顺序
         for line in fr:
-            # 23.5.26 line结构内容示意： {"id": 20230000001, "file_name": "HuXQEyIAeRq70Z6F4gD",}
-            v = line.strip().split(',') 
-            # v= ['{"id": 20230000001', '"file_name": "HuXQEyIAeRq70Z6F4gDTOwh"']
-            item_1 = v[0].strip().split(":") # item_1=['{"id"', ' 20230000001']
-            item_2 = v[1].strip().split(":") # item_2=['"file_name"', ' "HuXQEyIAeRq70Z6l"']
-            # item_1[1][1:]的值是20230000001，item_2[1][2:-1]的值是HuXQEyIAeRq70Z6l
+            v = line.strip().split(',')
+            item_1 = v[0].strip().split(":")
+            item_2 = v[1].strip().split(":")
             dic[item_2[1][2:-1]] = item_1[1][1:]
-            # 23.5.26 上面的dic定义后dic={HuXQEyIAe:20230000001}以文件名为key，id为value
             keys.append(item_2[1][2:-1])
         fr.close()
 
         bbox_results = []
         mask_results = []
         idx = 0
-        print("Start saving coco json files......")
-        # 23.5.27 box_num就是单个img的img_boxs_num，每个img都会有boxes_num只是多少的问题
+        anno_id = 0
+        print("Start saving coco json files...")
         for i, box_num in enumerate(results['boxes_num']):
-            file_name = os.path.split(image_list[i])[-1] # 取出文件名dsdeHHe.jpg
+            file_name = os.path.split(image_list[i])[-1]
             if use_coco_category:
-                # img_id = int(os.path.splitext(file_name)[0])
-                anno_id = int(os.path.splitext(file_name)[0])
+                img_id = int(os.path.splitext(file_name)[0])
             else:
-                # 原文件走这个逻辑
-                # img_id = i
-                anno_id = i+1 # 这里应该是annotation的id，看群里说要+1
+                img_id = i
 
-            name = file_name[:-4] # 取文件名
-            img_id = dic[name] # 用文件名在dic中对应img_id
+            name = file_name[:-4]
 
-            # if 'boxes' in results:
-                # boxes = results['boxes'][idx:idx + box_num].tolist()
-                # bbox_results.extend([{
-                #     'image_id': img_id,
-                #     'category_id': coco_clsid2catid[int(box[0])] \
-                #         if use_coco_category else int(box[0]),
-                #     'file_name': file_name,
-                #     'bbox': [box[2], box[3], box[4] - box[2],
-                #          box[5] - box[3]],  # xyxy -> xywh
-                #     'score': box[1]} for box in boxes])
-                                # boxes = results['boxes'][idx:idx + box_num].tolist()
             if 'boxes' in results:
                 boxes = results['boxes'][idx:idx + box_num].tolist()
-                # 23.5.27 去掉score低的box，发现提交还是格式异常，anno个数278，是不是要求300个？
-                # 每个img保留最高score的box
-                high_score_idx = 0
-                # for box in boxes:
-                for i in range(0, len(boxes)):
-                    if boxes[high_score_idx][1] < boxes[i][1]:
-                        high_score_idx = i
-
-                box = boxes[high_score_idx]
-                # 23.5.27 保证每个img都有一个score最大的box保留
-                bbox_results.extend([{
-                    'iscrowd': 0,
-                    'id': anno_id,
-                    'image_id' : img_id,
-                    'category_id': coco_clsid2catid[int(box[0])] \
-                        if use_coco_category else int(box[0] + 1),
-                    # 'file_name': name, 5.26按照提交要求，不要这个
-                    'bbox': [box[2], box[3], box[4] - box[2],
-                        box[5] - box[3]],  # xyxy -> xywh
-                    'score': box[1],
-                    'area': (box[4] - box[2])*(box[5] - box[3])}])
+                for i, box in enumerate(boxes):
+                    if box[1] > 0.3: # 23.6.8 保留所有Bbox，结果再用json函数处理，用作结果观察
+                        anno_id += 1 # 23.5.30 只有在extend有效框时id递增
+                        bbox_results.extend([{
+                            "iscrowd": 0,
+                            'id': int(anno_id),
+                            # 'id': dic[name],
+                            'image_id': int(dic[name]),
+                            'category_id': coco_clsid2catid[int(box[0])] \
+                                if use_coco_category else int(box[0] + 1),
+                            # 'file_name': name,
+                            'bbox': [box[2], box[3], box[4] - box[2],
+                                box[5] - box[3]],  # xyxy -> xywh
+                            'score': box[1],
+                            'area': (box[4] - box[2]) * (box[5] - box[3])}])
 
             if 'masks' in results:
                 import pycocotools.mask as mask_util

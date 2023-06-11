@@ -106,6 +106,32 @@ OptimizerBuilder:
     weight_decay: 0.0001
 
 
+这是一个关于学习率（Learning Rate）的配置片段，其中包含了学习率的初始设置、调度器以及线性预热的配置信息。
+
+下面是对每个配置项的详细解释：
+
+epoch: 60：总训练周期数，表示训练将运行60个周期。
+
+LearningRate：学习率的配置信息。
+
+base_lr: 0.001：学习率的初始值，设置为0.001。
+
+schedulers：学习率调度器的列表，用于根据训练的进程调整学习率。
+
+!PiecewiseDecay：使用 PiecewiseDecay 调度器。
+
+gamma: 0.1：学习率衰减因子，表示每个里程碑（milestone）处学习率衰减为原来的0.1倍。
+
+milestones: [8, 11]：里程碑的列表，表示在第8和第11个周期时进行学习率衰减。
+
+!LinearWarmup：使用 LinearWarmup 预热调度器。
+
+start_factor: 0.1：预热的初始学习率因子，表示预热时学习率为初始学习率的0.1倍。
+
+steps: 1000：预热的步数，表示在前1000个步骤内进行线性预热，逐渐增加学习率到正常值。
+
+这些配置项可以根据具体的训练需求进行调整，包括总训练周期数、初始学习率、调度器的选择和调参，以及预热的配置。学习率的调整策略对于训练的收敛和性能具有重要影响，需要根据具体问题和实验经验进行选择和调整。
+
 # 以下是rtdetr_r50vd.yml的内容
 architecture: DETR
 pretrain_weights: https://paddledet.bj.bcebos.com/models/pretrained/ResNet50_vd_ssld_v2_pretrained.pdparams
