@@ -468,17 +468,22 @@ class Detector(object):
         writer.release()
 
     def save_coco_results(self, image_list, results, use_coco_category=False):
-        fr = open('/home/aistudio/val_imgID.txt', 'r')
-        dic = {}
-        keys = [] # 用来存储读取的顺序
-        for line in fr:
-            v = line.strip().split(',')
-            item_1 = v[0].strip().split(":")
-            item_2 = v[1].strip().split(":")
-            dic[item_2[1][2:-1]] = item_1[1][1:]
-            keys.append(item_2[1][2:-1])
-        fr.close()
+        # fr = open('/home/aistudio/val_imgID.txt', 'r')
+        with open('/home/aistudio/val_imgID.txt', 'r') as f:
+            # 6.11 需要把.txt文件改造为json，这样可以直接取到字段，操作更方便，下面注释是文件改造
+            image_data = json.load(f)
+        # val_imgID.txt 原文件的格式有误，可视化修改后，这里submerge的处理代码也要修改
+        # dic = {}
+        image_dict = {image['file_name']: image['id'] for image in image_data}
 
+        # keys = [] # 用来存储读取的顺序
+        # for line in fr:
+        #     v = line.strip().split(',')
+        #     item_1 = v[0].strip().split(":")
+        #     item_2 = v[1].strip().split(":")
+        #     dic[item_2[1][2:-1]] = item_1[1][1:]
+        #     keys.append(item_2[1][2:-1])
+        # fr.close()
         bbox_results = []
         mask_results = []
         idx = 0
@@ -496,13 +501,15 @@ class Detector(object):
             if 'boxes' in results:
                 boxes = results['boxes'][idx:idx + box_num].tolist()
                 for i, box in enumerate(boxes):
-                    if box[1] > 0.3: # 23.6.8 保留所有Bbox，结果再用json函数处理，用作结果观察
+                    # 23.6.8 保留所有Bbox，结果再用json函数处理，用作结果观察
+                    # 23.6.16 修改为visualize，默认的threshold=0.5，这样和自动作画是一致的
+                    if box[1] > 0.2: 
                         anno_id += 1 # 23.5.30 只有在extend有效框时id递增
                         bbox_results.extend([{
                             "iscrowd": 0,
                             'id': int(anno_id),
                             # 'id': dic[name],
-                            'image_id': int(dic[name]),
+                            'image_id': int(image_dict[name]),
                             'category_id': coco_clsid2catid[int(box[0])] \
                                 if use_coco_category else int(box[0] + 1),
                             # 'file_name': name,
