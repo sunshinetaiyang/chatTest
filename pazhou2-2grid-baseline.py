@@ -568,7 +568,7 @@ get_ipython().system('python tools/eval.py -c configs/few-shot/faster_rcnn_r50_v
 #  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.864
 # [06/16 09:42:49] ppdet.engine INFO: Total sample number: 80, average FPS: 12.129655432787684
 
-# DONE (t=0.29s). lable_co_finetune 分数提交68左右
+# DONE (t=0.29s). lable_co_finetune 分数提交68左右 faster rcnn
 #  Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.726
 #  Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.894
 #  Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.811
@@ -728,34 +728,35 @@ get_ipython().system(' cp /home/aistudio/PaddleDetection/infer_output_grid_depol
 # In[5]:
 
 
-import os
-import json
-import random
-import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
-from PIL import Image
+# import os
+# import json
+# import random
+# import matplotlib.pyplot as plt
+# %matplotlib inline
+# from PIL import Image
 
 # 文件夹路径
 # folder_path = '/home/aistudio/PaddleDetection/infer_output/' # lable_co 的模型
-INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
-BBOX_JSON_PATH = '/home/aistudio/bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+# INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
+# BBOX_JSON_PATH = '/home/aistudio/bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
 
 # 获取文件夹中所有图片文件的路径
 # image_files =        [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.jpg')]
 # image_files = sorted([os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.jpg')])
 
+# 6.17 已组合进函数
 # 6.16 测试集就这么一个取到字典是最方便
-with open('/home/aistudio/val_imgID.txt', 'r') as f:
-    image_data = json.load(f)
-image_dict = {image['id']: image['file_name'] for image in image_data}
+# with open('/home/aistudio/val_imgID.txt', 'r') as f:
+#     image_data = json.load(f)
+# image_dict = {image['id']: image['file_name'] for image in image_data}
 
-# 6.16 准备获取图片对应的检测框信息
-import json
+# # 6.16 准备获取图片对应的检测框信息
+# import json
 
-with open(BBOX_JSON_PATH, 'r') as f:
-    anno_data = json.load(f)
+# with open(BBOX_JSON_PATH, 'r') as f:
+#     anno_data = json.load(f)
 
-pic_id = 20230000045
+# pic_id = 20230000045
 
 # 6.11 重点图片分析
 # 1，pic_id:148, pic_name:jCBgPvSALlEWcVmRKFiIfaQGs1NM42wyeOpYXh6H.jpg,Image Size: 8688 x 5792
@@ -806,53 +807,57 @@ pic_id = 20230000045
 # In[98]:
 
 
-# 6.16 如需通过filename显示，先找到pic_id，这样如下的代码逻辑进行统一，不需要修改
-target_filename = 'LUgwKYyd1cCbXqZ4pD0kFVHv9Bt3T6Oe2ArlPIsN'
-pic_id = 0
-for key, value in image_dict.items():
-    if value == target_filename:
-        pic_id = key
-        break
-pic_id
+# # 6.16 如需通过filename显示，先找到pic_id，这样如下的代码逻辑进行统一，不需要修改
+# target_filename = 'LUgwKYyd1cCbXqZ4pD0kFVHv9Bt3T6Oe2ArlPIsN'
+# pic_id = 0
+# for key, value in image_dict.items():
+#     if value == target_filename:
+#         pic_id = key
+#         break
+# pic_id
 
 
-# In[36]:
+# In[14]:
 
 
-# 随机选择一张图片，修改为顺序选择
-pic_id=20230000126
+analysis_pic_list = [20230000052,20230000056,20230000107,20230000124,20230000158,20230000230,20230000270]
+# analysis_pic_list_two = [20230000029,
+# 20230000110,
+# 20230000120,
+# 20230000121,
+# 20230000123,
+# 20230000144,
+# 20230000156,
+# 20230000183,
+# 20230000268
+# ]
+idx = 0
 
 
-# image_path = os.path.join(INFER_IMAGES_PATH, image_dict[pic_id]+'.jpg')
+# In[18]:
 
-# # 加载图片
-# image = Image.open(image_path)
 
-# # 获取图片的宽度和高度
-# w, h = image.size
+idx+=1
 
-# 显示图片和坐标
-# plt.imshow(image)
-# print(f'pic_id:{pic_id}, pic_name:{image_dict[pic_id]},Image Size: {w} x {h}\n')
 
-# relevant_dicts = [bbox_dict for bbox_dict in anno_data if bbox_dict['image_id'] == pic_id]
-# print(relevant_dicts)
-# plt.show()
+# In[19]:
 
-# 6.16 遍历
-# pic_id+=1
+
+# 6.16 封装统一函数后，维护方便非常多
+pic_id=analysis_pic_list[idx]
+# idx+=1
 INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
 test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
 BBOX_JSON_PATH = '/home/aistudio/bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
 id_name_file = '/home/aistudio/val_imgID.txt'
-# drawed_path = '/home/aistudio/work/pic_analysis'
+drawed_path = '/home/aistudio/work/pic_analysis'
 
-draw_image_anno_from_json(pic_id, id_name_file, INFER_IMAGES_PATH, BBOX_JSON_PATH)
+draw_image_anno_from_json(pic_id, id_name_file, INFER_IMAGES_PATH, BBOX_JSON_PATH, drawed_path)
 
 
 # ### 6.2 result.json文件的图片可视化
 
-# In[33]:
+# In[21]:
 
 
 INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
@@ -864,9 +869,11 @@ drawed_path = '/home/aistudio/work/pic_analysis'
 draw_image_anno_from_json(pic_id, id_name_file, test_images_folder, BBOX_JSON_PATH, drawed_path)
 
 
-# In[32]:
+# In[1]:
 
 
+# 【重要功能函数】draw_image_anno_from_json
+# 可视化infer的图像，CV的可视化函数要封装起来，便于维护与迭代
 import json
 import os
 import matplotlib.pyplot as plt
@@ -874,26 +881,20 @@ import matplotlib.patches as patches
 
 # 23.6.16 根据id和infer的json框作图，id_name_file提供文件名映射,imgs_path提供图片目录路径
 # 23.6.16 修改为封装函数的好处还是很大的，要坚持封装
-# 如果drawed_save_path=''则表示只绘制来自Paddle的图像，不加载bbox.json的bbox绘制，也不保存
-def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file, drawed_save_path=''):
-    # 获取文件夹中所有图片文件的路径
-    # image_files =        [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.jpg')]
-    # image_files = sorted([os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.jpg')])
-
+# 23.7.18 分析图片时都进行单独cp出来分析，将结果保存到save_save_path，逻辑区分换为是不是dataset目录
+def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file, drawed_save_path):
     # 6.16 测试集就这么一个取到字典是最方便
     with open(id_name_file, 'r') as f:
-        image_data = json.load(f)
+        id_name_json_data = json.load(f)
     # ID和文件名对应dict    {202300001：dajkjdlerDFDFS}
-    image_dict = {image['id']: image['file_name'] for image in image_data}
-
-    # 6.16 准备获取图片对应的检测框信息
-    with open(bbox_json_file, 'r') as f:
-        anno_data = json.load(f)
-
+    id_name_dict = {image['id']: image['file_name'] for image in id_name_json_data}
     # 获取指定图像ID对应的文件名
-    file_name = image_dict[image_id]
+    file_name = id_name_dict[image_id]
     print(f'image_id:{image_id},pic_name:{file_name}')
 
+    # 6.16 准备获取图片对应的检测框信息，pazhou02项目的json文件只有annotation信息
+    with open(bbox_json_file, 'r') as f:
+        anno_data = json.load(f)
     # 获取指定图像ID对应的所有边界框
     bboxes = [bbox for bbox in anno_data if bbox['image_id'] == image_id]
 
@@ -905,7 +906,8 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
     # 绘制每个边界框
     for bbox in bboxes:
         print(f'bbox:{bbox}')
-        if '' != drawed_save_path:
+        # 23.6.18 如果图片来自原图dataset，则需要自行绘制；否则是infer时自动生成的
+        if 'dataset' in imgs_path:
             bbox_values = bbox['bbox']
             x, y, w, h = bbox_values[0], bbox_values[1], bbox_values[2], bbox_values[3]
             rect = patches.Rectangle((x, y), w, h, linewidth=1, edgecolor='r', facecolor='none')
@@ -914,10 +916,75 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
     # 获取图片的宽度和高度
     # w, h = image.size
     # 6.16 注意这里必须在plt.show()之前调用
-    if '' != drawed_save_path:
+    # 6.18 自行生成bbox框的，需要savefig
+    if 'dataset' in imgs_path:
         plt.savefig(os.path.join(drawed_save_path, file_name + '.jpg'))
+    else:
+        # 6.18 结合上一句代码，如果是依据Bbox自行绘制rect，则要保存到文件夹分析
+        # 当不需要plt.savefig()时，也把文件cp到pic_analysis进行分析
+        # 6.11 拷贝到/work/pic_analysis进行分析
+        import shutil
+        src_file_path = image_path
+        save_file_path = os.path.join(drawed_save_path, file_name + '.jpg')
+        shutil.copy(src_file_path, save_file_path)        
     # 显示图片和坐标
     plt.show()
+
+
+# In[27]:
+
+
+# 【重要功能函数】adjust_jsons 用于json文件的手动修改
+# 6.16 合并json文件，用于手动增加未识别的图片
+# 6.18 把类似逻辑的功能函数进行封装，便于维护merge_jsons->adjust，变为可增可删
+import json
+
+def adjust_jsons(bbox_file, out_file, txt_file='', list_for_delete=None):
+    if '' != txt_file and list_for_delete != None:
+        # 6.18 避免添加的id导致可能的di错乱，增、删分开操作
+        print('to avoid id error, one time one op')
+        return
+
+    # 读取bbox.json文件内容
+    with open(bbox_file, 'r') as f:
+        bbox_data = json.load(f)
+
+    # 读取manual.txt文件内容
+    manual_data = []
+    if '' != txt_file:
+        with open(txt_file, 'r') as f:
+            manual_data = [json.loads(line.replace("'", '"')) for line in f]
+
+    # 处理增加未找到的图片的bbox，合并两个列表
+    merged_data = bbox_data + manual_data
+    
+    # 6.18 删除重复的anno_id
+    if list_for_delete != []:
+        # 根据id删除字典
+        merged_data = [item for item in merged_data if item['id'] not in list_for_delete]
+
+    # 6.16 重新整理id
+    for i, data in enumerate(merged_data):
+        data['id'] = i + 1
+    # 将合并后的数据写入新的文件
+    with open(out_file, 'w') as f:
+        json.dump(merged_data, f)
+    print('File adjusted.')
+
+
+# In[28]:
+
+
+bbox_file = '/home/aistudio/merged_bbox.json'
+txt_file = '/home/aistudio/manual_add.txt'
+out_file = '/home/aistudio/adjusted_bbox.json'
+
+list_for_delete = [12,179,222,178,
+30,
+113
+]
+# adjust_jsons(bbox_file, out_file, txt_file) # 6.17 增
+adjust_jsons(bbox_file, out_file, '', list_for_delete) # 6.18 删
 
 
 # ### 6.3 手动增删提分试验
@@ -927,21 +994,10 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
 # In[88]:
 
 
-# 6.11 拷贝到/work/pic_analysis进行分析
-import shutil
-import os
-
-# 定义文件名和目录名
-file_name = image_path
-dir_name = '/home/aistudio/work/pic_analysis/'
-
-get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/infer_output/')
-# cp IY3oElce0qhvBKzMWmutLA4U6D8fFsNOxXVdSwQH.jpg  ~/work/pic_analysis/
-# 拷贝文件
-shutil.copy(file_name, dir_name)
 
 
-# In[9]:
+
+# In[1]:
 
 
 # 6.16 bbox.json文件分析，
@@ -983,9 +1039,9 @@ def count_bbox_dicts(json_file, txt_file, output_file):
 
 
 # 示例用法
-json_file = '/home/aistudio/bbox.json'
+json_file = '/home/aistudio/merged_bbox.json'
 txt_file = '/home/aistudio/val_imgID.txt'
-output_file = '/home/aistudio/b_num.csv'
+output_file = '/home/aistudio/merged_82b_num.csv'
 count_bbox_dicts(json_file, txt_file, output_file)
 
 
