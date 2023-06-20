@@ -49,7 +49,7 @@
 
 # ### 3.2 查看train数据集图片和标注框情况
 
-# In[93]:
+# In[35]:
 
 
 # 23.6.7 查看数据集中图片与标准信息
@@ -71,64 +71,64 @@ image_files = sorted(os.listdir(image_folder))
 pic_id = 700
 
 
-# In[177]:
+# In[71]:
 
 
 
+# 6.19 已实现统一封装
+# # 随机选择一张图片
+# # image_file = random.choice(image_files)
+# image_file = image_files[pic_id]
+# pic_id+=1
+# # image_file = 'gD70hFn1TxmVd5HYOB4AirLNq3oSkyPCIscR8juw.jpg'
 
-# 随机选择一张图片
-# image_file = random.choice(image_files)
-image_file = image_files[pic_id]
-pic_id+=1
-# image_file = 'gD70hFn1TxmVd5HYOB4AirLNq3oSkyPCIscR8juw.jpg'
+# # 构建标注文件路径
+# annotation_file = os.path.join(annotation_folder, os.path.splitext(image_file)[0] + '.xml')
 
-# 构建标注文件路径
-annotation_file = os.path.join(annotation_folder, os.path.splitext(image_file)[0] + '.xml')
+# # 打开图片
+# image_path = os.path.join(image_folder, image_file)
+# image = Image.open(image_path)
 
-# 打开图片
-image_path = os.path.join(image_folder, image_file)
-image = Image.open(image_path)
+# # 获取图片宽度和高度
+# width, height = image.size
 
-# 获取图片宽度和高度
-width, height = image.size
+# # 打开标注文件
+# tree = ET.parse(annotation_file)
+# root = tree.getroot()
 
-# 打开标注文件
-tree = ET.parse(annotation_file)
-root = tree.getroot()
-
-# 解析标注文件，提取边界框信息
-bboxes = []
-for obj in root.iter('object'):
-    # 获取边界框坐标
-    bbox = obj.find('bndbox')
-    xmin = int(bbox.find('xmin').text)
-    ymin = int(bbox.find('ymin').text)
-    xmax = int(bbox.find('xmax').text)
-    ymax = int(bbox.find('ymax').text)
+# # 解析标注文件，提取边界框信息
+# bboxes = []
+# for obj in root.iter('object'):
+#     # 获取边界框坐标
+#     bbox = obj.find('bndbox')
+#     xmin = int(bbox.find('xmin').text)
+#     ymin = int(bbox.find('ymin').text)
+#     xmax = int(bbox.find('xmax').text)
+#     ymax = int(bbox.find('ymax').text)
     
-    # 将边界框坐标转换为左上角和右下角坐标形式
-    bbox_coords = (xmin, ymin, xmax, ymax)
-    bboxes.append(bbox_coords)
+#     # 将边界框坐标转换为左上角和右下角坐标形式
+#     bbox_coords = (xmin, ymin, xmax, ymax)
+#     bboxes.append(bbox_coords)
 
-# 在图片上绘制边界框和坐标轴
-fig, ax = plt.subplots()
-ax.imshow(image)
+# # 在图片上绘制边界框和坐标轴
+# fig, ax = plt.subplots()
+# ax.imshow(image)
 
-for bbox in bboxes:
-    xmin, ymin, xmax, ymax = bbox
-    # 绘制边界框矩形
-    rect = plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, edgecolor='red', linewidth=2)
-    ax.add_patch(rect)
+# for bbox in bboxes:
+#     xmin, ymin, xmax, ymax = bbox
+#     # 绘制边界框矩形
+#     rect = plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, edgecolor='red', linewidth=2)
+#     ax.add_patch(rect)
 
-# 添加图片尺寸的坐标轴
-ax.set_xlim(0, width)
-ax.set_ylim(height, 0)
-ax.set_aspect('equal')
-ax.set_title('Image with Bounding Boxes')
-ax.set_xlabel('Width')
-ax.set_ylabel('Height')
+# # 添加图片尺寸的坐标轴
+# ax.set_xlim(0, width)
+# ax.set_ylim(height, 0)
+# ax.set_aspect('equal')
+# ax.set_title('Image with Bounding Boxes')
+# ax.set_xlabel('Width')
+# ax.set_ylabel('Height')
 
-plt.show()
+# plt.show()
 
 
 # ### 3.3 分析train数据集category分布并做增广处理
@@ -317,7 +317,7 @@ get_ipython().system('pip install paddlex')
 # ! mv PaddleDetection-2.5.0 PaddleDetection
 
 
-# In[2]:
+# In[1]:
 
 
 # 克隆PaddleDetection仓库
@@ -332,7 +332,7 @@ get_ipython().system('pip install -r requirements.txt --user')
 get_ipython().system('python setup.py install')
 
 
-# In[3]:
+# In[2]:
 
 
 # 安装后确认测试通过：23.5.29
@@ -477,7 +477,7 @@ get_ipython().system('python ppdet/modeling/tests/test_architectures.py')
 # ! python tools/train.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml -r output/rtdetr_hgnetv2_x_6x_coco/98 --eval
 
 
-# In[3]:
+# In[1]:
 
 
 # 6.15 使用ppyoloe训练试试
@@ -486,7 +486,7 @@ get_ipython().run_line_magic('cd', '~/PaddleDetection')
 # ! python tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml \
 # -r output/ppyoloe_plus_crn_x_80e_coco/4 --eval --amp 
 get_ipython().system('export CUDA_VISIBLE_DEVICES=0,1,2,3')
-get_ipython().system('python -m paddle.distributed.launch --gpus 0,1,2,3 tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml -r output/ppyoloe_plus_crn_x_80e_coco/39 --fleet --eval')
+get_ipython().system('python -m paddle.distributed.launch --gpus 0,1,2,3 tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml -r output/ppyoloe_plus_crn_x_80e_coco/89 --fleet --eval')
 
 
 # In[69]:
@@ -653,10 +653,26 @@ get_ipython().system('python tools/export_model.py -c configs/few-shot/faster_rc
 # !cp /home/aistudio/coco_config/infer.py /home/aistudio/PaddleDetection/deploy/python/
 
 
+# In[23]:
+
+
+# 6.18 准备调用官方绘图函数，观察其参数，只需推理1张即可观察
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_file=/home/aistudio/PaddleDetection/dataset/grid_coco/test/HvWgFtQ7mSlTr0uKYw2MGIfApbjZcizRN5sdkEX6.jpg --device=GPU --output_dir one_img_for_test --save_results')
+
+
 # In[4]:
 
 
 # 6.16 ppyoloe+ 的推理
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir infer_output_grid_depoly --save_results')
+
+
+# In[ ]:
+
+
+# 6.19 使用ppyoloe+ 推理验证集，对比观察，分析图像增强方案
 get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir infer_output_grid_depoly --save_results')
 
@@ -817,7 +833,7 @@ get_ipython().system(' cp /home/aistudio/PaddleDetection/infer_output_grid_depol
 # pic_id
 
 
-# In[14]:
+# In[2]:
 
 
 analysis_pic_list = [20230000052,20230000056,20230000107,20230000124,20230000158,20230000230,20230000270]
@@ -834,21 +850,22 @@ analysis_pic_list = [20230000052,20230000056,20230000107,20230000124,20230000158
 idx = 0
 
 
-# In[18]:
+# In[31]:
 
 
 idx+=1
+print(idx)
+print(analysis_pic_list[idx])
 
 
-# In[19]:
+# In[4]:
 
 
 # 6.16 封装统一函数后，维护方便非常多
 pic_id=analysis_pic_list[idx]
-# idx+=1
 INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
-test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
-BBOX_JSON_PATH = '/home/aistudio/bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+# test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
+BBOX_JSON_PATH = '/home/aistudio/json/061602bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
 id_name_file = '/home/aistudio/val_imgID.txt'
 drawed_path = '/home/aistudio/work/pic_analysis'
 
@@ -857,10 +874,10 @@ draw_image_anno_from_json(pic_id, id_name_file, INFER_IMAGES_PATH, BBOX_JSON_PAT
 
 # ### 6.2 result.json文件的图片可视化
 
-# In[21]:
+# In[5]:
 
 
-INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
+# INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
 test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
 BBOX_JSON_PATH = '/home/aistudio/0.2bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
 id_name_file = '/home/aistudio/val_imgID.txt'
@@ -869,69 +886,207 @@ drawed_path = '/home/aistudio/work/pic_analysis'
 draw_image_anno_from_json(pic_id, id_name_file, test_images_folder, BBOX_JSON_PATH, drawed_path)
 
 
-# In[1]:
+# ### 6.3 评估数据集的可视化
+
+# #### 6.3.1 准备图像文件夹
+
+# In[2]:
+
+
+# 6.19 为了对比infer评估集的结论，vs 标注数据，先拷贝到文件夹eval
+
+import json
+import shutil
+import os
+
+# 读取JSON文件
+with open('/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json') as json_file:
+    data = json.load(json_file)
+
+# 获取源目录和目标目录路径
+source_directory = "/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages"
+target_directory = "/home/aistudio/PaddleDetection/dataset/grid_coco/eval"
+
+# 复制文件
+for image in data['images']:
+    file_name = image['file_name']
+    source_file_path = os.path.join(source_directory, file_name)
+    target_file_path = os.path.join(target_directory, file_name)
+    shutil.copyfile(source_file_path, target_file_path)
+
+print("文件复制完成")
+
+
+# #### 6.3.2 准备id-name对应的txt
+
+# In[6]:
+
+
+import json
+
+get_ipython().run_line_magic('cd', '')
+# 读取JSON文件
+with open('/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json') as json_file:
+    data = json.load(json_file)
+
+# 创建id_name_list列表
+id_name_list = []
+for image in data['images']:
+    image_id = image['id']
+    file_name = image['file_name']
+    id_name_list.append({"id": image_id, "file_name": file_name.split('.')[0]})
+
+# 将结果保存到文件
+with open('eval_id_filename.txt', 'w') as file:
+    json.dump(id_name_list, file)
+
+print("结果已保存到eval_id_filename.txt文件")
+# 考虑不修改infer.py，把内容merge到val_imgID.txt
+
+
+# #### 6.3.3 调用推理脚本进行推理
+
+# In[7]:
+
+
+# 6.19 使用ppyoloe+ 推理验证集，对比观察，分析图像增强方案
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/eval --device=GPU --output_dir infer_eval_diff_test --save_results')
+
+
+# #### 6.3.4 eval数据集原标注数据的可视化
+
+# In[57]:
+
+
+pic_id = 50
+
+
+# In[58]:
+
+
+# 0619 绘制原数据集标注的标准图像
+# pic_id = 3
+# pic_id+=1
+
+images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
+BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json' # 上面图像文件夹对应的json文件，可查看标注信息
+id_name_file   = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json'
+drawed_path = '/home/aistudio/work/pic_analysis'
+
+draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
+
+
+# #### 6.3.5 推理INFER绘图可视化
+
+# In[59]:
+
+
+# images_folder = '/home/aistudio/PaddleDetection/infer_eval_diff_test'
+images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
+BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+id_name_file = '/home/aistudio/val_imgID.txt'
+drawed_path = '/home/aistudio/work/pic_analysis'
+
+draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
+
+
+# #### 6.3.6 可视化功能函数原型
+
+# In[4]:
 
 
 # 【重要功能函数】draw_image_anno_from_json
 # 可视化infer的图像，CV的可视化函数要封装起来，便于维护与迭代
 import json
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from PIL import Image
+
+# 6.18 以下代码为了调用官方平台的绘图API
+get_ipython().run_line_magic('cd', "'/home/aistudio/PaddleDetection/deploy/python/'")
+from visualize import visualize_box_mask
+
+LABELS = ['nest', 'kite', 'balloon', 'trash']
+# 23.6.18 draw_image带bbox的功能函数，把bbox.json的文件数据转为visualize_box_mask()接受的参数
+def convert_bboxes_to_infer_result(bbox_datas):
+    results = {'boxes': np.array([], dtype=np.float32).reshape(0, 6)}
+
+    for bbox in bbox_datas:
+        category_id = bbox['category_id'] - 1
+        score = bbox.get('score', 1)  # Use 1 as the default value if 'score' field is missing
+        left, top, width, height = bbox['bbox']
+        right = left + width
+        bottom = top + height
+        results['boxes'] = np.vstack((results['boxes'], [category_id, score, left, top, right, bottom]))
+
+    return results
 
 # 23.6.16 根据id和infer的json框作图，id_name_file提供文件名映射,imgs_path提供图片目录路径
 # 23.6.16 修改为封装函数的好处还是很大的，要坚持封装
 # 23.7.18 分析图片时都进行单独cp出来分析，将结果保存到save_save_path，逻辑区分换为是不是dataset目录
 def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file, drawed_save_path):
-    # 6.16 测试集就这么一个取到字典是最方便
     with open(id_name_file, 'r') as f:
-        id_name_json_data = json.load(f)
-    # ID和文件名对应dict    {202300001：dajkjdlerDFDFS}
-    id_name_dict = {image['id']: image['file_name'] for image in id_name_json_data}
-    # 获取指定图像ID对应的文件名
+        json_data = json.load(f)
+    if '.json' in id_name_file:
+        # 6.19 新增对train数据集json官方标注的支持
+        id_name_dict = {image['id']: image['file_name'].split('.')[0] for image in json_data['images']}        
+    else:
+        # 6.16 测试集就这么一个取到字典是最方便
+        # ID和文件名对应dict    {202300001：dajkjdlerDFDFS}
+        id_name_dict = {image['id']: image['file_name'] for image in json_data}
+        
     file_name = id_name_dict[image_id]
     print(f'image_id:{image_id},pic_name:{file_name}')
 
-    # 6.16 准备获取图片对应的检测框信息，pazhou02项目的json文件只有annotation信息
-    with open(bbox_json_file, 'r') as f:
-        anno_data = json.load(f)
+    if '.json' in id_name_file:
+        anno_data = json_data['annotations']
+    else:
+        # 6.19 infer的json只有anno_data，不带image_data
+        with open(bbox_json_file, 'r') as f:
+            anno_data = json.load(f)
+    
     # 获取指定图像ID对应的所有边界框
-    bboxes = [bbox for bbox in anno_data if bbox['image_id'] == image_id]
+    bbox_datas = [bbox for bbox in anno_data if bbox['image_id'] == image_id]
+    # print(f'bbox_datas:{bbox_datas}')
 
     # 加载并显示图像
     image_path = os.path.join(imgs_path, file_name + '.jpg')
-    image = plt.imread(image_path)
-    plt.imshow(image)
 
     # 绘制每个边界框
-    for bbox in bboxes:
+    for bbox in bbox_datas:
         print(f'bbox:{bbox}')
-        # 23.6.18 如果图片来自原图dataset，则需要自行绘制；否则是infer时自动生成的
-        if 'dataset' in imgs_path:
-            bbox_values = bbox['bbox']
-            x, y, w, h = bbox_values[0], bbox_values[1], bbox_values[2], bbox_values[3]
-            rect = patches.Rectangle((x, y), w, h, linewidth=1, edgecolor='r', facecolor='none')
-            plt.gca().add_patch(rect)
 
     # 获取图片的宽度和高度
     # w, h = image.size
     # 6.16 注意这里必须在plt.show()之前调用
     # 6.18 自行生成bbox框的，需要savefig
-    if 'dataset' in imgs_path:
-        plt.savefig(os.path.join(drawed_save_path, file_name + '.jpg'))
+    if 'dataset' in imgs_path and bbox_datas != []:
+        im_results = convert_bboxes_to_infer_result(bbox_datas)
+        print(f'im_results:{im_results}')
+        im = visualize_box_mask(image_path, im_results, LABELS, threshold=0.2)
+        if not os.path.exists(drawed_save_path):
+            os.makedirs(drawed_save_path)
+        out_path = os.path.join(drawed_save_path, 'MA__'+ file_name + '.jpg')
     else:
         # 6.18 结合上一句代码，如果是依据Bbox自行绘制rect，则要保存到文件夹分析
         # 当不需要plt.savefig()时，也把文件cp到pic_analysis进行分析
         # 6.11 拷贝到/work/pic_analysis进行分析
-        import shutil
-        src_file_path = image_path
-        save_file_path = os.path.join(drawed_save_path, file_name + '.jpg')
-        shutil.copy(src_file_path, save_file_path)        
+        # im = plt.imread(image_path)
+        im = Image.open(image_path).convert('RGB')
+        out_path = os.path.join(drawed_save_path, 'IN__'+ file_name + '.jpg')
     # 显示图片和坐标
+    im.save(out_path, quality=95)
+    print("save drawed img to: " + out_path)
+    plt.imshow(im)
     plt.show()
 
 
-# In[27]:
+# #### 6.3.7 json文件修正函数原型
+
+# In[15]:
 
 
 # 【重要功能函数】adjust_jsons 用于json文件的手动修改
@@ -939,15 +1094,16 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
 # 6.18 把类似逻辑的功能函数进行封装，便于维护merge_jsons->adjust，变为可增可删
 import json
 
-def adjust_jsons(bbox_file, out_file, txt_file='', list_for_delete=None):
+# 6.19 增加通过thresh删除Bbox的功能
+def adjust_jsons(json_file, out_file, txt_file='', list_for_delete=None, thresh=1):
     if '' != txt_file and list_for_delete != None:
         # 6.18 避免添加的id导致可能的di错乱，增、删分开操作
         print('to avoid id error, one time one op')
         return
 
     # 读取bbox.json文件内容
-    with open(bbox_file, 'r') as f:
-        bbox_data = json.load(f)
+    with open(json_file, 'r') as f:
+        json_data = json.load(f)
 
     # 读取manual.txt文件内容
     manual_data = []
@@ -955,14 +1111,17 @@ def adjust_jsons(bbox_file, out_file, txt_file='', list_for_delete=None):
         with open(txt_file, 'r') as f:
             manual_data = [json.loads(line.replace("'", '"')) for line in f]
 
-    # 处理增加未找到的图片的bbox，合并两个列表
-    merged_data = bbox_data + manual_data
+    # 功能一：处理增加未找到的图片的bbox，合并两个列表
+    merged_data = json_data + manual_data
     
-    # 6.18 删除重复的anno_id
+    # 功能二：6.18 删除重复的anno_id
     if list_for_delete != []:
         # 根据id删除字典
         merged_data = [item for item in merged_data if item['id'] not in list_for_delete]
 
+    # 功能三：6.19 删除小于thresh的bbox
+    if 1 != thresh:
+        merged_data = [item for item in merged_data if item['score'] > thresh]
     # 6.16 重新整理id
     for i, data in enumerate(merged_data):
         data['id'] = i + 1
@@ -972,32 +1131,30 @@ def adjust_jsons(bbox_file, out_file, txt_file='', list_for_delete=None):
     print('File adjusted.')
 
 
-# In[28]:
+# In[18]:
 
 
-bbox_file = '/home/aistudio/merged_bbox.json'
-txt_file = '/home/aistudio/manual_add.txt'
-out_file = '/home/aistudio/adjusted_bbox.json'
+# bbox_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/bbox.json'
+bbox_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
+txt_file  = '/home/aistudio/manual_add.txt'
+out_file  = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
 
-list_for_delete = [12,179,222,178,
-30,
-113
-]
+# list_for_delete = [12,179,222,178,
+# 30,
+# 113
+# ]
+
+list_for_delete = [26]
 # adjust_jsons(bbox_file, out_file, txt_file) # 6.17 增
-adjust_jsons(bbox_file, out_file, '', list_for_delete) # 6.18 删
+# adjust_jsons(bbox_file, out_file, '', list_for_delete) # 6.18 删
+adjust_jsons(bbox_file, out_file, '', [], 0.5) # 6.19 删除infer生成的0.2，改为0.5与标注比
 
 
-# ### 6.3 手动增删提分试验
+# ### 6.4 JSON文件标注详情分析
 
 # 新建文本文件进行记录，比cell方便
 
-# In[88]:
-
-
-
-
-
-# In[1]:
+# In[19]:
 
 
 # 6.16 bbox.json文件分析，
@@ -1006,12 +1163,14 @@ adjust_jsons(bbox_file, out_file, '', list_for_delete) # 6.18 删
 # 20230000002	HvWgFtQ7mSlTr0uKYw2MGIfApbjZcizRN5sdkEX6	1
 # 20230000003	HWGTxO7U09BdAqroS3i4JPNCwpFb2MkZunXtjLVa	2
 # 20230000004	HxgqCP6MYuoNOEULy41nTWsfXJRQwlkhdp7tVB0Z	2
-
+# 【重要功能函数】adjust_jsons 用于json文件的手动修改
+# 6.16 合并json文件，用于手动增加未识别的图片
 
 
 import json
 import csv
 
+# 6.18 分析json文件中各img的标注框num
 def count_bbox_dicts(json_file, txt_file, output_file):
     with open(json_file, 'r') as f:
         bbox_data = json.load(f)
@@ -1019,14 +1178,24 @@ def count_bbox_dicts(json_file, txt_file, output_file):
     with open(txt_file, 'r') as f:
         val_data = json.load(f)
 
+    # id_imgname的dict {20230000001: {"id": 20230000001, "file_name": "HuXQEyIAeRq70Z6F4gDTOwh9zPnkBmaoCiNb2f8l"}}
     id_dict = {item['id']: item for item in val_data}
 
     bbox_counts = {}
+
+    # 6.18 对每一个json中的anno进行遍历处理
+    # 6.19 新增加对标注coco标注接送文件的支持，之前是项目提交文件，少image字段
+    
+    if not isinstance(bbox_data, list): # 如果是list，表明是infer.py构造的，反之则是标注的coco格式
+        bbox_data = bbox_data.get('annotations', 0)
+
     for bbox_dict in bbox_data:
         image_id = bbox_dict['image_id']
         if image_id in id_dict:
             id_val = id_dict[image_id]
+            # bbox_counts的内容示例：{20230000001, 2}
             bbox_counts[image_id] = bbox_counts.get(image_id, 0) + 1
+            # 以下语句很关键,id_val和val_data的内存空间是一样的，相对于扩展了val_data的第三个字段
             id_val['bbox_num'] = bbox_counts[image_id]
 
     with open(output_file, 'w', newline='') as csvfile:
@@ -1039,10 +1208,131 @@ def count_bbox_dicts(json_file, txt_file, output_file):
 
 
 # 示例用法
-json_file = '/home/aistudio/merged_bbox.json'
+# json_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/bbox.json'
+json_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
 txt_file = '/home/aistudio/val_imgID.txt'
-output_file = '/home/aistudio/merged_82b_num.csv'
+output_file = '/home/aistudio/619infer-0.5_bbox.csv'
 count_bbox_dicts(json_file, txt_file, output_file)
+
+
+# ### 6.5 标注基准json与Infer推理结果的bbox.json文件对比
+
+# In[51]:
+
+
+# 6.19 比较基准标注json和推理json的IoU，分析准确率
+
+# !pip install shapely
+
+import json
+from shapely.geometry import box
+from shapely.ops import cascaded_union
+
+def get_IoU_from_jsons(coco_json, infer_json, out_filename):
+    # 读取grid_valid.json文件，带annotation字段
+    with open(coco_json, 'r') as f:
+        grid_data = json.load(f)
+
+    # 读取0.5bbox.json文件，不带annotation关键词，只有annotation内容
+    with open(infer_json, 'r') as f:
+        bbox_data = json.load(f)
+
+    image_id_to_infer_category = {annotation['image_id']: annotation['category_id'] for annotation in bbox_data}
+    image_id_to_infer_bbox = {annotation['image_id']: annotation['bbox'] for annotation in bbox_data}
+    # 存储对比结果
+    results = []
+
+    # 遍历grid_data['annotations']，计算IoU并存储对比结果
+    for annotation in grid_data['annotations']:
+        image_id = annotation['image_id']
+        anno_cate_id = annotation['category_id'] 
+        anno_bbox = annotation['bbox']
+
+        infer_cate_id = image_id_to_infer_category.get(image_id)
+        if infer_cate_id is None:
+            continue
+
+        # 获取0.5bbox.json中对应image_id的bbox信息
+        infer_bbox = image_id_to_infer_bbox.get(image_id)
+        if infer_bbox is None:
+            continue
+
+        # 计算bbox之间的IoU
+        # bbox_coords = box(*anno_bbox)
+        # infer_bbox_coords = box(*infer_bbox)
+
+        # intersection = bbox_coords.intersection(infer_bbox_coords).area
+        # union = cascaded_union([bbox_coords, infer_bbox_coords]).area #  cascaded_union
+        # iou = intersection / union
+        # left1, top1, width1, height1 = box(*anno_bbox)
+        # left2, top2, width2, height2 = box(*infer_bbox)
+        # left1, top1, width1, height1 = anno_bbox.bounds
+        # left2, top2, width2, height2 = infer_bbox.bounds
+        left1, top1, width1, height1 = anno_bbox
+        left2, top2, width2, height2 = infer_bbox
+        xmin1 = left1
+        ymin1 = top1
+        xmax1 = left1 + width1
+        ymax1 = top1 + height1
+
+        xmin2 = left2
+        ymin2 = top2
+        xmax2 = left2 + width2
+        ymax2 = top2 + height2
+
+        # 计算交集区域的坐标
+        x_intersection = max(0, min(xmax1, xmax2) - max(xmin1, xmin2))
+        y_intersection = max(0, min(ymax1, ymax2) - max(ymin1, ymin2))
+
+        # 计算交集区域的面积
+        intersection = x_intersection * y_intersection
+
+        # 计算两个框各自的面积
+        area1 = width1 * height1
+        area2 = width2 * height2
+
+        # 计算并集的面积
+        union = area1 + area2 - intersection
+
+        # 计算 IoU
+        iou = intersection / union
+
+        # 存储对比结果
+        result = {
+            'image_id': image_id,
+            'anno_cate_id': anno_cate_id,
+            'infer_id': infer_cate_id,
+            'anno_bbox': anno_bbox,
+            'infer_bbox': infer_bbox,
+            'IoU': iou
+        }
+        results.append(result)
+
+    # 按照image_id进行排序
+    results = sorted(results, key=lambda x: x['image_id'])
+
+    # 输出对比结果
+    for result in results:
+        # 输出对比结果
+        print(f"image_id: {result['image_id']}, anno_cate_id: {result['anno_cate_id']},             infer_id: {result['infer_id']}, \n'anno_bbox': {result['anno_bbox']},             \n'infer_bbox': {result['infer_bbox']},  \nIoU: {result['IoU']}\n")
+    # 写入CSV文件
+    with open(out_filename, mode='w', newline='') as file:
+        fieldnames = ['image_id', 'anno_cate_id', 'infer_id', 'anno_bbox', 'infer_bbox', 'IoU']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        
+        # 写入表头
+        writer.writeheader()
+        
+        # 逐行写入数据
+        for result in results:
+            writer.writerow(result)
+        print(f'写入文件完成：{out_filename}')
+
+coco_json = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json'
+infer_json = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
+out_filename = '/home/aistudio/diff_json_eval.csv'
+
+get_IoU_from_jsons(coco_json, infer_json, out_filename)
 
 
 # ## 七、总结与提高

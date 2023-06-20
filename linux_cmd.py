@@ -6,6 +6,8 @@ $ du -sh img_classification_ckpt/
 
 jupyter nbconvert --to=python main.ipynb
 
+paddle.fluid.dygraph.guard.release()
+
 git clone https://hub.fastgit.xyz/author/repo
 https://doc.fastgit.org/zh-cn/guide.html#web-%E7%9A%84%E4%BD%BF%E7%94%A8
 

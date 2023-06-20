@@ -1014,6 +1014,8 @@ def visualize(image_list, result, labels, output_dir='output/', threshold=0.5):
                                                   im_bboxes_num]
 
         start_idx += im_bboxes_num
+        # 6.18 观察visualize_box_mask画图函数的参数
+        # print(f'image_file:{image_file}, im_results:{im_results}, labels:{labels}, threshold:{threshold}')
         im = visualize_box_mask(
             image_file, im_results, labels, threshold=threshold)
         img_name = os.path.split(image_file)[-1]
