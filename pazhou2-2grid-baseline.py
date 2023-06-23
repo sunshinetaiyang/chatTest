@@ -3,7 +3,7 @@
 
 # ## 一、 赛题背景。5.25作者更新版本。PaddleDetection官方最新模型rtd，跑分72分
 
-# ## 三、 数据集分析
+# # 三、 数据集分析与图像增强
 
 # ### 3.1 先把原始xml文件中文件名不匹配的问题解决，这是官方提供数据集的一个小问题
 
@@ -24,52 +24,31 @@
 # !mv *.xml Annotations/
 
 
-# In[2]:
+# In[37]:
 
 
-# # 解决原数据filename问题
-# import os
-# from xml.etree import ElementTree as ET
+# 解决原数据filename问题
+import os
+from xml.etree import ElementTree as ET
 
-# # 把所有PaddleDetection2.5/dataset/coco 换成新目录 PaddleDetection/dataset/grid_coco
-# # 标注文件夹路径
-# annotation_dir = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/Annotations'
+# 把所有PaddleDetection2.5/dataset/coco 换成新目录 PaddleDetection/dataset/grid_coco
+# 标注文件夹路径
+annotation_dir = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/Annotations'
 
-# # 遍历标注文件夹，修改文件名
-# for filename in os.listdir(annotation_dir):
-#     xml_path = os.path.join(annotation_dir, filename)
-#     tree = ET.parse(xml_path)
-#     root = tree.getroot()
-#     annotation_filename = os.path.splitext(filename)[0] + '.jpg'
-#     root.find('filename').text = annotation_filename
+def fix_filename(annotation_dir):
+    # 遍历标注文件夹，修改文件名
+    for filename in os.listdir(annotation_dir):
+        xml_path = os.path.join(annotation_dir, filename)
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+        annotation_filename = os.path.splitext(filename)[0] + '.jpg'
+        root.find('filename').text = annotation_filename
 
-#     # 保存修改后的标注文件
-#     tree.write(xml_path)
+        # 保存修改后的标注文件
+        tree.write(xml_path)
 
 
 # ### 3.2 查看train数据集图片和标注框情况
-
-# In[35]:
-
-
-# 23.6.7 查看数据集中图片与标准信息
-import os
-import random
-import xml.etree.ElementTree as ET
-from PIL import Image
-import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('cd', '')
-
-
-# 图片和标注文件夹路径
-image_folder = 'PaddleDetection/dataset/grid_coco/train/JPEGImages'
-annotation_folder = 'PaddleDetection/dataset/grid_coco/train/Annotations'
-
-# 获取图片文件列表
-image_files = sorted(os.listdir(image_folder))
-pic_id = 700
-
 
 # In[71]:
 
@@ -133,61 +112,61 @@ pic_id = 700
 
 # ### 3.3 分析train数据集category分布并做增广处理
 
-# In[4]:
+# In[1]:
 
 
-# # 6.9 标注信息分析
-# import os
-# import xml.etree.ElementTree as ET
+# 6.9 标注信息分析
+import os
+import xml.etree.ElementTree as ET
 
-# !rm -rf PaddleDetection/dataset/grid_coco/train/Annotations/.ipynb_checkpoints
-# # 标注文件夹路径
-# annotation_folder = 'PaddleDetection/dataset/grid_coco/train/Annotations'
+get_ipython().system('rm -rf PaddleDetection/dataset/grid_coco/train/Annotations/.ipynb_checkpoints')
+# 标注文件夹路径
+annotation_folder = 'PaddleDetection/dataset/grid_coco/train/Annotations'
 
-# # 类别字典
-# class_dict = {'nest': 1, 'kite': 2, 'balloon': 3, 'trash': 4}
+# 类别字典
+class_dict = {'nest': 1, 'kite': 2, 'balloon': 3, 'trash': 4}
 
-# # 统计类型数量的字典
-# class_count = {class_name: 0 for class_name in class_dict.keys()}
+# 统计类型数量的字典
+class_count = {class_name: 0 for class_name in class_dict.keys()}
 
-# # 遍历标注文件夹中的所有.xml文件
-# xml_files = os.listdir(annotation_folder)
+# 遍历标注文件夹中的所有.xml文件
+xml_files = os.listdir(annotation_folder)
 
-# # 用于观察一个图片多个标注框的情况
-# multi_objs_files = []
+# 用于观察一个图片多个标注框的情况
+multi_objs_files = []
 
-# for xml_file in xml_files:
-#     xml_path = os.path.join(annotation_folder, xml_file)
+for xml_file in xml_files:
+    xml_path = os.path.join(annotation_folder, xml_file)
     
-#     # 解析标注文件
-#     tree = ET.parse(xml_path)
-#     root = tree.getroot()
+    # 解析标注文件
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
     
-#     obj_num = 0
-#     # 遍历标注文件中的所有目标
-#     for obj in root.iter('object'):
-#         # 获取目标类别名称
-#         class_name = obj.find('name').text
-#         # 统计类型数量
-#         if class_name in class_dict:
-#             class_count[class_name] += 1
+    obj_num = 0
+    # 遍历标注文件中的所有目标
+    for obj in root.iter('object'):
+        # 获取目标类别名称
+        class_name = obj.find('name').text
+        # 统计类型数量
+        if class_name in class_dict:
+            class_count[class_name] += 1
 
-#         # 统计目标的bbox信息
-#         obj_num+=1
-#     # 完成obj遍历后，如果obj_num>1，记住这个文件
-#     if obj_num > 1:
-#         multi_objs_files.append(xml_file)            
+        # 统计目标的bbox信息
+        obj_num+=1
+    # 完成obj遍历后，如果obj_num>1，记住这个文件
+    if obj_num > 1:
+        multi_objs_files.append(xml_file)            
 
-# # 打印类型分布统计结果
-# for class_name, count in class_count.items():
-#     print(f'{class_name}: {count}')
+# 打印类型分布统计结果
+for class_name, count in class_count.items():
+    print(f'{class_name}: {count}')
 
-# for file in multi_objs_files:
-#     print(file)
-# # nest: 540
-# # kite: 103
-# # balloon: 88
-# # trash: 76 数据分布800个标注文件，807个标注框
+for file in multi_objs_files:
+    print(file)
+# nest: 540
+# kite: 103
+# balloon: 88
+# trash: 76 数据分布800个标注文件，807个标注框
 
 
 # In[5]:
@@ -271,7 +250,7 @@ pic_id = 700
 
 # **Step02：** 使用 PaddleX 划分数据集
 
-# In[1]:
+# In[ ]:
 
 
 get_ipython().system('pip install paddlex')
@@ -317,7 +296,7 @@ get_ipython().system('pip install paddlex')
 # ! mv PaddleDetection-2.5.0 PaddleDetection
 
 
-# In[1]:
+# In[ ]:
 
 
 # 克隆PaddleDetection仓库
@@ -332,7 +311,7 @@ get_ipython().system('pip install -r requirements.txt --user')
 get_ipython().system('python setup.py install')
 
 
-# In[2]:
+# In[ ]:
 
 
 # 安装后确认测试通过：23.5.29
@@ -340,43 +319,6 @@ get_ipython().system('python ppdet/modeling/tests/test_architectures.py')
 
 
 # ### 5.2 检测数据分析
-
-# In[18]:
-
-
-# import os
-# from unicodedata import name
-# import xml.etree.ElementTree as ET
-# import glob
-
-# def count_num(indir):
-#     # 提取xml文件列表
-#     os.chdir(indir)
-#     annotations = os.listdir('.')
-#     annotations = glob.glob(str(annotations) + '*.xml')
-
-#     dict = {} # 新建字典，用于存放各类标签名及其对应的数目
-#     for i, file in enumerate(annotations): # 遍历xml文件
-       
-#         # actual parsing
-#         in_file = open(file, encoding = 'utf-8')
-#         tree = ET.parse(in_file)
-#         root = tree.getroot()
-
-#         # 遍历文件的所有标签
-#         for obj in root.iter('object'):
-#             name = obj.find('name').text
-#             if(name in dict.keys()): dict[name] += 1 # 如果标签不是第一次出现，则+1
-#             else: dict[name] = 1 # 如果标签是第一次出现，则将该标签名对应的value初始化为1
-
-#     # 打印结果
-#     print("各类标签的数量分别为：")
-#     for key in dict.keys(): 
-#         print(key + ': ' + str(dict[key]))            
-
-# indir='/home/aistudio/PaddleDetection2.5/dataset/coco/train/Annotations/'   # xml文件所在的目录
-# count_num(indir) # 调用函数统计各类标签数目
-
 
 # **图像尺寸分析：** 通过图像尺寸分析，我们可以看到该数据集图片的尺寸不一。
 # **数据处理是关键**
@@ -414,11 +356,7 @@ get_ipython().system('python ppdet/modeling/tests/test_architectures.py')
 
 # ### 5.3 模型训练
 
-# （非必须）：我们可以通过以下代码块将VOC格式数据集转换成COCO格式数据集。
-# 
-# 注意：由于标注文件中filename字段和xml格式标注文件本身的名字不相符，我们直接通过x2coco.py转换数据集格式，会发现在训练的时候会找不到数据集图片，原因就是因为转换后的标注文件误以为文件名是xml格式标注文件的filename字段。
-# 
-# 解决方法：可以直接修改x2coco.py的源码，修改后的文件存放在/home/aistudio/coco_config/路径下，大家可以自行查看！
+# #### 5.3.1 COCO_JSON文件准备，工具代码准备
 
 # In[20]:
 
@@ -477,6 +415,8 @@ get_ipython().system('python ppdet/modeling/tests/test_architectures.py')
 # ! python tools/train.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml -r output/rtdetr_hgnetv2_x_6x_coco/98 --eval
 
 
+# #### 5.3.2 四卡/恢复训练ppyoloe_plus_crn_x_80e_coco
+
 # In[1]:
 
 
@@ -486,16 +426,41 @@ get_ipython().run_line_magic('cd', '~/PaddleDetection')
 # ! python tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml \
 # -r output/ppyoloe_plus_crn_x_80e_coco/4 --eval --amp 
 get_ipython().system('export CUDA_VISIBLE_DEVICES=0,1,2,3')
-get_ipython().system('python -m paddle.distributed.launch --gpus 0,1,2,3 tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml -r output/ppyoloe_plus_crn_x_80e_coco/89 --fleet --eval')
+get_ipython().system('python -m paddle.distributed.launch --gpus 0,1,2,3 tools/train.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml -r output/ppyoloe_plus_crn_x_80e_coco/94 --fleet --eval')
 
 
-# In[69]:
+# In[ ]:
+
+
+# epoch94 最好记录
+DONE (t=0.30s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.826
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.894
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.826
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.844
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.871
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.871
+[06/22 15:30:02] ppdet.engine INFO: Total sample number: 80, average FPS: 9.013338731489236
+[06/22 15:30:02] ppdet.engine INFO: Best test bbox ap is 0.826.
+[06/22 15:30:12] ppdet.utils.checkpoint INFO: Save checkpoint: output/ppyoloe_plus_crn_x_80e_coco
+[06/22 15:30:13] ppdet.engine INFO: Epoch: [95] [ 0/22] learning_rate: 0.000005 loss: 0.952444 loss_cls: 0.430
+
+
+# #### 5.3.4 单卡训练faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid小样本CoTuning
+
+# In[8]:
 
 
 # 6.9进行小样本label_co_tuning尝试
 get_ipython().run_line_magic('cd', '~/PaddleDetection')
 # !cp faster
-get_ipython().system(' python tools/train.py -c configs/few-shot/faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid.yml -r output/faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid/49 --eval')
+get_ipython().system(' python tools/train.py -c configs/few-shot/faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid.yml  --eval  -r output/faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid/44')
 
 
 # In[26]:
@@ -509,7 +474,9 @@ get_ipython().system(' python tools/train.py -c configs/few-shot/faster_rcnn_r50
 
 # ### 5.4 模型评估
 
-# In[4]:
+# #### 5.4.1 使用ppyoloe训练结果评估
+
+# In[1]:
 
 
 # 6.16 使用ppyoloe训练结果评估
@@ -518,6 +485,75 @@ get_ipython().system('python tools/eval.py -c configs/ppyoloe/ppyoloe_plus_crn_x
 
 
 # In[ ]:
+
+
+DONE (t=0.10s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.826
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.894
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.826
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.844
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.871
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.871
+[06/22 22:12:42] ppdet.engine INFO: Total sample number: 80, average FPS: 11.970214334855246
+
+[06/20 23:43:32] epoch
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.825
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.889
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.825
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.844
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.876
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.933
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.873
+[06/20 23:43:32] ppdet.engine INFO: Total sample number: 80, average FPS: 3.435854495555083
+6.20 GridMask有效，注意mode: 0参数。
+eval集评估结论：
+DONE (t=0.11s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.815
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.995
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.889
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.900
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.815
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.836
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.865
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.866
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.900
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.864
+[06/16 09:42:49] ppdet.engine INFO: Total sample number: 80, average FPS: 12.129655432787684
+
+train集自评估结论：
+Accumulating evaluation results...
+DONE (t=1.08s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.921
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.978
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.855
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.928
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.922
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.936
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.936
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.879
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.942
+[06/20 10:30:01] ppdet.engine INFO: Total sample number: 720, average FPS: 7.454259201856159
+
+
+# #### 5.4.2 使用faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid进行评估
+
+# In[9]:
 
 
 get_ipython().run_line_magic('cd', '~/PaddleDetection')
@@ -612,13 +648,17 @@ get_ipython().system('python tools/infer.py -c configs/ppyoloe/ppyoloe_plus_crn_
 
 # ### 5.6 模型导出
 
-# In[7]:
+# #### 5.6.1 导出ppyoloe+的模型
+
+# In[1]:
 
 
 # 6.16 使用ppyoloe导出模型
 get_ipython().run_line_magic('cd', '~/PaddleDetection')
 get_ipython().system('python tools/export_model.py -c configs/ppyoloe/ppyoloe_plus_crn_x_80e_coco.yml -o weights=output/ppyoloe_plus_crn_x_80e_coco/best_model')
 
+
+# #### 5.6.2 导出faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid的模型
 
 # In[39]:
 
@@ -634,7 +674,7 @@ get_ipython().system('python tools/export_model.py -c configs/few-shot/faster_rc
 # !python tools/export_model.py -c configs/rtdetr/rtdetr_hgnetv2_x_6x_coco.yml --output_dir=./inference_model -o weights=output/rtdetr_hgnetv2_x_6x_coco/best_model
 
 
-# ### 5.6 结果文件生成
+# ### 5.7 推理预测INFER结果文件生成
 
 # baseline目前已经成功提交，如果在提交方面有问题的话可以参考下这部分的内容，最后祝愿大家在本次比赛中都取得好成绩！
 # 
@@ -653,6 +693,8 @@ get_ipython().system('python tools/export_model.py -c configs/few-shot/faster_rc
 # !cp /home/aistudio/coco_config/infer.py /home/aistudio/PaddleDetection/deploy/python/
 
 
+# #### 5.7.1 推理单张照片，观察绘图函数逻辑
+
 # In[23]:
 
 
@@ -661,7 +703,9 @@ get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_file=/home/aistudio/PaddleDetection/dataset/grid_coco/test/HvWgFtQ7mSlTr0uKYw2MGIfApbjZcizRN5sdkEX6.jpg --device=GPU --output_dir one_img_for_test --save_results')
 
 
-# In[4]:
+# #### 5.7.2 ppyoloe+模型的推理300张推理数据集
+
+# In[2]:
 
 
 # 6.16 ppyoloe+ 的推理
@@ -669,13 +713,7 @@ get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir infer_output_grid_depoly --save_results')
 
 
-# In[ ]:
-
-
-# 6.19 使用ppyoloe+ 推理验证集，对比观察，分析图像增强方案
-get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
-get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir infer_output_grid_depoly --save_results')
-
+# #### 5.7.3 faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid小数据集模型Lable co tuning模型推理
 
 # In[40]:
 
@@ -683,6 +721,8 @@ get_ipython().system('python deploy/python/infer.py --model_dir=output_inference
 get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system('python deploy/python/infer.py --model_dir=inference_model/faster_rcnn_r50_vd_fpn_1x_coco_cotuning_grid --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir infer_output --save_results')
 
+
+# #### 5.7.4 rtdetr_hgnetv2_x_6x_coco大模型推理
 
 # In[32]:
 
@@ -700,46 +740,34 @@ get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system("paddlex.det.coco_error_analysis(eval_details_file=None, gt=None, pred_bbox=None, pred_mask=None, save_dir='./infer_output/')")
 
 
-# In[5]:
+# #### 5.7.5 使用ppyoloe_plus 自动切图 推理
+
+# In[ ]:
 
 
-get_ipython().run_line_magic('cd', '')
-# !pwd
-# !python change_id.py
-# ! cp /home/aistudio/PaddleDetection/infer_output/bbox.json ~/
-get_ipython().system(' cp /home/aistudio/PaddleDetection/infer_output_grid_depoly/bbox.json ~/')
+get_ipython().system('pip install sahi')
 
 
-# In[34]:
+# In[51]:
 
 
-# # 23.6.8 特意保留所有的bbox在all_bbox.json以便后处理分析只用，就不需要再次推理等待时间
+# 或图片文件夹 【参考】https://github.com/PaddlePaddle/PaddleDetection/tree/release/2.6/configs/smalldet
+# CUDA_VISIBLE_DEVICES=0 python deploy/python/infer.py
+#  --model_dir=output_inference/ppyoloe_crn_l_80e_sliced_visdrone_640_025 
+#  --image_dir=demo/ --device=GPU --save_images --threshold=0.25  
+#  --slice_infer --slice_size 640 640 --overlap_ratio 0.25 0.25 --combine_method=nms 
+#  --match_threshold=0.6 --match_metric=ios
+# 6.22 --slice_size 640时内存不够挂死，大尺寸反而好
 
-# import json
-
-# %cd ~/json
-
-# # 读取原始数据
-# with open('all_bbox.json', 'r') as file:
-#     data = json.load(file)
-
-# # 过滤掉"score"值小于0.3的字典，并重新排列id
-# filtered_data = [d for d in data if d.get('score', 0) >= 0.3]
-
-# # 重新排列id
-# for i, d in enumerate(filtered_data):
-#     d['id'] = i + 1
-
-# # 保存结果到新文件
-# with open('bbox_3.json', 'w') as file:
-#     json.dump(filtered_data, file)
-
-# print("Filtered data with re-arranged ids saved to bbox_3.json")
+# 6.16 ppyoloe+ 的推理
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system(' CUDA_VISIBLE_DEVICES=0')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/test --device=GPU --output_dir slice_infer_output_grid --save_results --slice_infer --slice_size 2048 2048 --overlap_ratio 0.25 0.25 --combine_method=nms --match_threshold=0.1 --match_metric=iou')
 
 
-# ## 6 后处理，观察分析预测结果
+# ## 6 模型能力分析及提升
 
-# ### 6.1 推理文件夹中paddle生成图片的可视化
+# ### 6.1 推理数据集300张图片的可视化分析和提升
 
 # In[5]:
 
@@ -833,24 +861,29 @@ get_ipython().system(' cp /home/aistudio/PaddleDetection/infer_output_grid_depol
 # pic_id
 
 
-# In[2]:
+# In[33]:
 
 
-analysis_pic_list = [20230000052,20230000056,20230000107,20230000124,20230000158,20230000230,20230000270]
-# analysis_pic_list_two = [20230000029,
-# 20230000110,
-# 20230000120,
-# 20230000121,
-# 20230000123,
-# 20230000144,
-# 20230000156,
-# 20230000183,
-# 20230000268
+# 6.21 漏检列表
+# analysis_pic_list = [20230000052,20230000056,20230000107,20230000124,20230000158,20230000230,20230000270]
+
+# [20230000052
+# 20230000107
+# 20230000158
+# 20230000230
+# 20230000270
 # ]
+# 6.21 重复框列表
+analysis_pic_list = [20230000052,
+20230000107,
+20230000158,
+20230000230,
+20230000270,
+20230000299]
 idx = 0
 
 
-# In[31]:
+# In[9]:
 
 
 idx+=1
@@ -858,37 +891,44 @@ print(idx)
 print(analysis_pic_list[idx])
 
 
-# In[4]:
+# #### 6.1.1 模型推理输出300张图像的可视化：官方绘图默认0.5的thresh
+
+# In[34]:
 
 
 # 6.16 封装统一函数后，维护方便非常多
 pic_id=analysis_pic_list[idx]
-INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
+# pic_id=20230000077
+
+# idx+=1
+
+INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/slice_infer_output_grid/' # ppyoloe+ 的模型
 # test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
-BBOX_JSON_PATH = '/home/aistudio/json/061602bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+BBOX_JSON_PATH = '/home/aistudio/epoch94_0_5.json' # 上面图像文件夹对应的json文件,仅用于查看标注信息
 id_name_file = '/home/aistudio/val_imgID.txt'
 drawed_path = '/home/aistudio/work/pic_analysis'
 
 draw_image_anno_from_json(pic_id, id_name_file, INFER_IMAGES_PATH, BBOX_JSON_PATH, drawed_path)
 
 
-# ### 6.2 result.json文件的图片可视化
+# #### 6.1.2 自定义thresh产生result.json文件的图片可视化：取thresh0.2观察更多推理信息
 
-# In[5]:
+# In[36]:
 
 
 # INFER_IMAGES_PATH = '/home/aistudio/PaddleDetection/infer_output_grid_depoly/' # ppyoloe+ 的模型
+# pic_id = 20230000156
 test_images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/test/'
-BBOX_JSON_PATH = '/home/aistudio/0.2bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+BBOX_JSON_PATH = '/home/aistudio/epoch94_0_2.json' # 上面图像文件夹对应的json文件，可查看标注信息
 id_name_file = '/home/aistudio/val_imgID.txt'
 drawed_path = '/home/aistudio/work/pic_analysis'
 
 draw_image_anno_from_json(pic_id, id_name_file, test_images_folder, BBOX_JSON_PATH, drawed_path)
 
 
-# ### 6.3 评估数据集的可视化
+# ### 6.2 评估数据集80张图片的可视化：拥有完备标注vs推理结果对比
 
-# #### 6.3.1 准备图像文件夹
+# #### 6.2.1 准备图像文件夹
 
 # In[2]:
 
@@ -917,7 +957,7 @@ for image in data['images']:
 print("文件复制完成")
 
 
-# #### 6.3.2 准备id-name对应的txt
+# #### 6.2.2 准备id-name对应的txt
 
 # In[6]:
 
@@ -944,7 +984,9 @@ print("结果已保存到eval_id_filename.txt文件")
 # 考虑不修改infer.py，把内容merge到val_imgID.txt
 
 
-# #### 6.3.3 调用推理脚本进行推理
+# #### 6.2.3 调用推理脚本进行推理
+
+# #### 6.2.3.1 ppyoloe_plus_crn_x_80e_coco模型推理
 
 # In[7]:
 
@@ -954,20 +996,32 @@ get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
 get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/eval --device=GPU --output_dir infer_eval_diff_test --save_results')
 
 
-# #### 6.3.4 eval数据集原标注数据的可视化
+# #### 6.2.3.2 Slice自动切图推理
 
-# In[57]:
-
-
-pic_id = 50
+# In[27]:
 
 
-# In[58]:
+# 或图片文件夹 【参考】https://github.com/PaddlePaddle/PaddleDetection/tree/release/2.6/configs/smalldet
+# CUDA_VISIBLE_DEVICES=0 python deploy/python/infer.py
+#  --model_dir=output_inference/ppyoloe_crn_l_80e_sliced_visdrone_640_025 
+#  --image_dir=demo/ --device=GPU --save_images --threshold=0.25  
+#  --slice_infer --slice_size 640 640 --overlap_ratio 0.25 0.25 --combine_method=nms 
+#  --match_threshold=0.6 --match_metric=ios
+# 6.22 --slice_size 640时内存不够挂死，大尺寸反而好
+
+# 6.16 ppyoloe+ 的推理
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system(' CUDA_VISIBLE_DEVICES=0')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/eval --device=GPU --output_dir slice_infer_output_grid --save_results --slice_infer --slice_size 2048 2048 --overlap_ratio 0.25 0.25 --combine_method=nms --match_threshold=0.1 --match_metric=iou')
+
+
+# #### 6.2.4 eval数据集80张原标注数据的可视化
+
+# In[49]:
 
 
 # 0619 绘制原数据集标注的标准图像
-# pic_id = 3
-# pic_id+=1
+pic_id = 31
 
 images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
 BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_valid.json' # 上面图像文件夹对应的json文件，可查看标注信息
@@ -977,23 +1031,155 @@ drawed_path = '/home/aistudio/work/pic_analysis'
 draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
 
 
-# #### 6.3.5 推理INFER绘图可视化
+# #### 6.2.5 模型推理得出的80张eval数据集绘图可视化
 
-# In[59]:
+# In[50]:
 
 
-# images_folder = '/home/aistudio/PaddleDetection/infer_eval_diff_test'
+images_folder  = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
+BBOX_JSON_PATH = '/home/aistudio/epoch94_eval80_0_5.json' # 上面图像文件夹对应的json文件，可查看标注信息
+id_name_file   = '/home/aistudio/val_imgID.txt'
+draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
+
+
+# ### 6.3 Train数据集720张图像的标注vs推理对比
+
+# #### 6.3.1 Train-Infer目录准备
+
+# In[3]:
+
+
+# 6.19 为了对比infer评估集的结论，vs 标注数据，先拷贝到文件夹eval
+
+import json
+import shutil
+import os
+
+# 读取JSON文件
+with open('/home/aistudio/PaddleDetection/dataset/grid_coco/grid_train.json') as json_file:
+    data = json.load(json_file)
+
+# 获取源目录和目标目录路径
+source_directory = "/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages"
+target_directory = "/home/aistudio/PaddleDetection/dataset/grid_coco/train-infer"
+
+# 复制文件
+for image in data['images']:
+    file_name = image['file_name']
+    source_file_path = os.path.join(source_directory, file_name)
+    target_file_path = os.path.join(target_directory, file_name)
+    # os.mkdir(target_directory)
+    shutil.copyfile(source_file_path, target_file_path)
+
+print("文件复制完成")
+
+
+# #### 6.3.2 id-filename.txt
+
+# In[5]:
+
+
+import json
+
+get_ipython().run_line_magic('cd', '')
+# 读取JSON文件
+with open('/home/aistudio/PaddleDetection/dataset/grid_coco/grid_train.json') as json_file:
+    data = json.load(json_file)
+
+# 创建id_name_list列表
+id_name_list = []
+for image in data['images']:
+    image_id = image['id'] + 23060001
+    file_name = image['file_name']
+    id_name_list.append({"id": image_id, "file_name": file_name.split('.')[0]})
+
+# 将结果保存到文件
+with open('train_id_filename.txt', 'w') as file:
+    json.dump(id_name_list, file)
+
+print("结果已保存到train_id_filename.txt文件")
+# 考虑不修改infer.py，把内容merge到val_imgID.txt
+
+
+# #### 6.3.3 推理720张train数据集：用于和标注对比，观察推理能力
+
+# In[6]:
+
+
+# 6.19 使用ppyoloe+ 推理验证集，对比观察，分析图像增强方案
+get_ipython().run_line_magic('cd', '/home/aistudio/PaddleDetection/')
+get_ipython().system('python deploy/python/infer.py --model_dir=output_inference/ppyoloe_plus_crn_x_80e_coco --image_dir=/home/aistudio/PaddleDetection/dataset/grid_coco/train-infer --device=GPU --output_dir infer_train720_diff_test --save_results')
+
+
+# #### 6.3.4 原标注720张train图像可视化
+
+# In[2]:
+
+
+train_trash_list = [465,
+468,
+469,
+471,
+474,
+476,
+478,
+482,
+483,
+488,
+501,
+507,
+524,
+532,
+553,
+561,
+564,
+569,
+577,
+588,
+603,
+611,
+612,
+629,
+667,
+670,
+697,
+705,
+714]
+idx=0
+
+
+# In[32]:
+
+
+# 0619 绘制原数据集标注的标准图像
+pic_id = train_trash_list[idx]
+idx+=1
+# pic_id = 384
 images_folder = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
-BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
-id_name_file = '/home/aistudio/val_imgID.txt'
+BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_train.json' # 上面图像文件夹对应的json文件，可查看标注信息
+id_name_file   = '/home/aistudio/PaddleDetection/dataset/grid_coco/grid_train.json'
 drawed_path = '/home/aistudio/work/pic_analysis'
 
 draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
 
 
-# #### 6.3.6 可视化功能函数原型
+# #### 6.3.5 模型推理720张train数据集图像的可视化
 
-# In[4]:
+# In[10]:
+
+
+images_folder  = '/home/aistudio/PaddleDetection/dataset/grid_coco/train/JPEGImages'
+BBOX_JSON_PATH = '/home/aistudio/PaddleDetection/infer_train720_diff_test/bbox.json' # 上面图像文件夹对应的json文件，可查看标注信息
+id_name_file   = '/home/aistudio/val_imgID.txt'
+pic_id = pic_id+23060001
+draw_image_anno_from_json(pic_id, id_name_file, images_folder, BBOX_JSON_PATH, drawed_path)
+
+
+# ## 七、分析提升工具代码
+
+# ### 7.1 图像可视化函数原型
+
+# In[1]:
 
 
 # 【重要功能函数】draw_image_anno_from_json
@@ -1069,14 +1255,14 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
         im = visualize_box_mask(image_path, im_results, LABELS, threshold=0.2)
         if not os.path.exists(drawed_save_path):
             os.makedirs(drawed_save_path)
-        out_path = os.path.join(drawed_save_path, 'MA__'+ file_name + '.jpg')
+        out_path = os.path.join(drawed_save_path, 'MA__'+ str(image_id) + '.jpg')
     else:
         # 6.18 结合上一句代码，如果是依据Bbox自行绘制rect，则要保存到文件夹分析
         # 当不需要plt.savefig()时，也把文件cp到pic_analysis进行分析
         # 6.11 拷贝到/work/pic_analysis进行分析
         # im = plt.imread(image_path)
         im = Image.open(image_path).convert('RGB')
-        out_path = os.path.join(drawed_save_path, 'IN__'+ file_name + '.jpg')
+        out_path = os.path.join(drawed_save_path, 'IN__'+ str(image_id) + '.jpg')
     # 显示图片和坐标
     im.save(out_path, quality=95)
     print("save drawed img to: " + out_path)
@@ -1084,7 +1270,7 @@ def draw_image_anno_from_json(image_id, id_name_file, imgs_path, bbox_json_file,
     plt.show()
 
 
-# #### 6.3.7 json文件修正函数原型
+# ### 7.2 JSON文件增、删、修正函数原型
 
 # In[15]:
 
@@ -1110,14 +1296,17 @@ def adjust_jsons(json_file, out_file, txt_file='', list_for_delete=None, thresh=
     if '' != txt_file:
         with open(txt_file, 'r') as f:
             manual_data = [json.loads(line.replace("'", '"')) for line in f]
+            print(f'Merging: {manual_data}')
 
     # 功能一：处理增加未找到的图片的bbox，合并两个列表
     merged_data = json_data + manual_data
+    # merged_data = [item for item in merged_data if int(item['id']) > 20230000000]
     
     # 功能二：6.18 删除重复的anno_id
-    if list_for_delete != []:
+    if list_for_delete:
         # 根据id删除字典
         merged_data = [item for item in merged_data if item['id'] not in list_for_delete]
+        print(f'Deleting ids: {list_for_delete}')
 
     # 功能三：6.19 删除小于thresh的bbox
     if 1 != thresh:
@@ -1125,36 +1314,34 @@ def adjust_jsons(json_file, out_file, txt_file='', list_for_delete=None, thresh=
     # 6.16 重新整理id
     for i, data in enumerate(merged_data):
         data['id'] = i + 1
+        # data['area'] = data['bbox'][2] * data['bbox'][3] # 用于刷新面积6.21
     # 将合并后的数据写入新的文件
     with open(out_file, 'w') as f:
         json.dump(merged_data, f)
-    print('File adjusted.')
+    print(f'File adjusted: {out_file}')
 
 
-# In[18]:
+# In[14]:
 
 
 # bbox_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/bbox.json'
-bbox_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
-txt_file  = '/home/aistudio/manual_add.txt'
-out_file  = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
+bbox_file = '/home/aistudio/val_imgID.bk.txt'
+txt_file  = '/home/aistudio/manual_add_epoch92.txt'
+out_file  = '/home/aistudio/val_imgID.txt'
 
-# list_for_delete = [12,179,222,178,
-# 30,
-# 113
-# ]
+# list_for_delete = [27, 29, 147, 176, 195]
 
-list_for_delete = [26]
+# list_for_delete = [26]
 # adjust_jsons(bbox_file, out_file, txt_file) # 6.17 增
 # adjust_jsons(bbox_file, out_file, '', list_for_delete) # 6.18 删
-adjust_jsons(bbox_file, out_file, '', [], 0.5) # 6.19 删除infer生成的0.2，改为0.5与标注比
+adjust_jsons(bbox_file, out_file,'',None,1) # 6.19 删除infer生成的0.2，改为0.5与标注比
 
 
-# ### 6.4 JSON文件标注详情分析
+# ### 7.3 JSON文件标注框num分析,JSON->CSV格式可视化
 
 # 新建文本文件进行记录，比cell方便
 
-# In[19]:
+# In[16]:
 
 
 # 6.16 bbox.json文件分析，
@@ -1186,7 +1373,7 @@ def count_bbox_dicts(json_file, txt_file, output_file):
     # 6.18 对每一个json中的anno进行遍历处理
     # 6.19 新增加对标注coco标注接送文件的支持，之前是项目提交文件，少image字段
     
-    if not isinstance(bbox_data, list): # 如果是list，表明是infer.py构造的，反之则是标注的coco格式
+    if not isinstance(bbox_data, list): # 如果是list，表明是infer.py构造的，反之则是标准的coco格式
         bbox_data = bbox_data.get('annotations', 0)
 
     for bbox_dict in bbox_data:
@@ -1204,18 +1391,52 @@ def count_bbox_dicts(json_file, txt_file, output_file):
         writer.writeheader()
         for item in val_data:
             bbox_num = item.get('bbox_num', 0)
+            # if bbox_num > 1:
             writer.writerow({'id': item['id'], 'file_name': item['file_name'], 'bbox_num': bbox_num})
 
+def json_to_csv(json_file, csv_file_name):
+    # 读取JSON文件
+    with open(json_file, 'r') as json_file:
+        data = json.load(json_file)
+
+    # 6.21 如果是list，表明是infer.py构造的，反之则是标准的coco格式，需要滤掉image的信息
+    if not isinstance(data, list): 
+        data = data.get('annotations', 0)
+
+    # 提取数据并保存到CSV文件
+    with open(csv_file_name, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+
+        # 写入CSV文件的表头
+        writer.writerow(["id", "image_id", "category_id", "bbox", "score", "area"])
+
+        # 写入数据行
+        for item in data:
+            item["score"] = item.get('score', 1)  # 没有score字段，表示是标注框
+            writer.writerow([
+                item["id"],
+                item["image_id"],
+                item["category_id"],
+                item["bbox"],
+                item["score"],
+                item["area"]
+            ])
+
+    print(f"数据已保存到{csv_file_name}文件中。")
 
 # 示例用法
 # json_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/bbox.json'
-json_file = '/home/aistudio/PaddleDetection/infer_eval_diff_test/0.5bbox.json'
-txt_file = '/home/aistudio/val_imgID.txt'
-output_file = '/home/aistudio/619infer-0.5_bbox.csv'
-count_bbox_dicts(json_file, txt_file, output_file)
+json_file = '/home/aistudio/epoch94_0_5.json'
+image_id_txt_file = '/home/aistudio/val_imgID.txt'
+output_file = '/home/aistudio/epoch94_0_5.csv'
+count_bbox_dicts(json_file, image_id_txt_file, output_file)
+
+json_file = '/home/aistudio/epoch94_0_8.json'
+csv_file = '/home/aistudio/epoch94_0_8.csv'
+# json_to_csv(json_file, csv_file)
 
 
-# ### 6.5 标注基准json与Infer推理结果的bbox.json文件对比
+# ### 7.4 JSON文件对比工具：标注基准json与Infer推理结果的bbox.json文件对比
 
 # In[51]:
 
@@ -1335,7 +1556,45 @@ out_filename = '/home/aistudio/diff_json_eval.csv'
 get_IoU_from_jsons(coco_json, infer_json, out_filename)
 
 
-# ## 七、总结与提高
+# ### 7.5 后处理方案
+
+# #### 7.5.1 针对thresh0.2文件的自动化后处理：滤+补漏+删重。成型后加入到infer.py
+
+# In[ ]:
+
+
+# 6.20 自动过滤+补漏
+import json
+
+# 读取bbox.json文件
+with open('bbox.json', 'r') as file:
+    bbox_data = json.load(file)
+
+# 创建一个字典用于按照image_id存储bbox数据
+bbox_dict = {}
+
+# 遍历bbox数据，按照image_id进行分类存储
+for bbox in bbox_data:
+    image_id = bbox['image_id']
+    if image_id not in bbox_dict:
+        bbox_dict[image_id] = []
+    bbox_dict[image_id].append(bbox)
+
+# 过滤bbox数据
+filtered_bbox = []
+for image_id, bbox_list in bbox_dict.items():
+    filtered_bbox_list = [bbox for bbox in bbox_list if bbox['score'] >= 0.5]
+    if not filtered_bbox_list:
+        max_score_bbox = max(bbox_list, key=lambda x: x['score'])
+        filtered_bbox_list.append(max_score_bbox)
+    filtered_bbox.extend(filtered_bbox_list)
+
+# 打印筛选后的bbox数据
+for bbox in filtered_bbox:
+    print(bbox)
+
+
+# ## 八、总结与提高
 
 # 以上是[第二届广州·琶洲算法大赛]基于复杂场景的输电通道隐患目标检测算法的baseline，大家将更多的精力花在改进模型提升模型的性能上。
 # 1. 数据增强层面：该数据集的样本不是很多，所以大家需要做一些针对性的数据增强。同时训练的时候大家可能需要划分数据集，但是最后选定好模型提交的时候我们可以将所有的标注数据集中起来去训练。PaddleDetection目前支持的数据增强包括：
