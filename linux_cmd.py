@@ -11,6 +11,18 @@ paddle.fluid.dygraph.guard.release()
 git clone https://hub.fastgit.xyz/author/repo
 https://doc.fastgit.org/zh-cn/guide.html#web-%E7%9A%84%E4%BD%BF%E7%94%A8
 
+tar -czvf archive.tar.gz file1 file2 directory
+-c 表示创建新的压缩文件。
+-z 表示使用gzip进行压缩。
+-v 表示显示压缩的详细信息。
+-f 后面跟着压缩文件的名称。
+tar  -xvf archive.tar
+-x 表示提取（解压缩）文件。
+-v 表示显示详细信息。
+-f 后面跟着要解压缩的.tar文件的名称。
+
+
+
 # !cp -r /home/aistudio/coco_config/_base_  /home/aistudio/PaddleDetection/configs/rtdetr/
 # 查找查询类
 # 按文件名查询
