@@ -10,7 +10,10 @@ paddle.fluid.dygraph.guard.release()
 
 git clone https://hub.fastgit.xyz/author/repo
 https://doc.fastgit.org/zh-cn/guide.html#web-%E7%9A%84%E4%BD%BF%E7%94%A8
+#拉取PaddleDetection
+!git clone https://github.com.cnpmjs.org/PaddlePaddle/PaddleDetection
 
+zip -r a.zip a/
 tar -czvf archive.tar.gz file1 file2 directory
 -c 表示创建新的压缩文件。
 -z 表示使用gzip进行压缩。
