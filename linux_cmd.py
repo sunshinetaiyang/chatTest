@@ -4,6 +4,11 @@ du -h path/to/file_or_directory
 $ du -sh img_classification_ckpt/
 命令可以查询指定dir下所有文件的总size
 
+
+export PATH=$PATH:~/bin
+
+
+
 jupyter nbconvert --to=python main.ipynb
 
 paddle.fluid.dygraph.guard.release()

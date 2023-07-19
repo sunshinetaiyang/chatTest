@@ -1,0 +1,39 @@
+runner:
+  train_data_dir: "/home/aistudio/data/data205411/2023-cvr-contest-data/train_data"
+  train_reader_path: "criteo_reader" # importlib format
+  use_gpu: True
+  use_auc: True
+  train_batch_size: 512
+  # 7.7 1-> 10
+  epochs: 10
+  # 7.7 50-30
+  print_interval: 30
+  model_save_path: "output_model_dnn_queue"
+
+  thread_num: 1
+  reader_type: "QueueDataset"  # DataLoader / QueueDataset / RecDataset
+  pipe_command: "python3.7 queuedataset_reader.py"
+  dataset_debug: False
+  split_file_list: False
+
+  infer_batch_size: 512
+  infer_reader_path: "criteo_reader" # importlib format
+  test_data_dir: "/home/aistudio/data/data204194/test_data"
+  infer_load_path: "output_model_dnn_queue"
+  # 7.7 use epoch3 to infer
+  infer_start_epoch: 1
+  infer_end_epoch: 2
+# hyper parameters of user-defined network
+hyper_parameters:
+  # optimizer config
+  optimizer:
+    class: Adam
+    learning_rate: 0.001
+    strategy: async
+  # user-defined <key, value> pairs
+  sparse_inputs_slots: 28
+  sparse_feature_number: 88000000
+  sparse_feature_dim: 9
+  dense_input_dim: 13
+  fc_sizes: [512, 256, 128, 32]
+  distributed_embedding: 0
