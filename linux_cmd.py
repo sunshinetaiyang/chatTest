@@ -28,6 +28,10 @@ tar  -xvf archive.tar
 -x 表示提取（解压缩）文件。
 -v 表示显示详细信息。
 -f 后面跟着要解压缩的.tar文件的名称。
+tar -xzf yourfile.tar.gz -C /path/to/destination
+-x: 表示解压
+-z: 表示使用gzip解压
+-f: 后跟要解压的文件名
 
 
 
