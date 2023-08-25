@@ -69,6 +69,10 @@ sys.path.append('/home/aistudio/external-libraries')
 
 # Linux中统计当前目录中的文件数目
 ls -l | grep "^-" | wc -l
+find dirA -maxdepth 1 -type d -o -type f | wc -l
+
+
+
 ls -lh
 # 查看文件总大小
 du -sh dir_a

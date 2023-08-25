@@ -332,6 +332,7 @@ def collate_context_bert_test(batch):
 
 # load DataLoader
 from paddle.io import DataLoader
+# 8.18 change
 train_dataloader = DataLoader(train_dataset, batch_size=4, shuffle=True, collate_fn = collate_context_bert_train, return_list=True)
 val_dataloader = DataLoader(val_dataset, batch_size=4, shuffle=False, collate_fn = collate_context_bert_train,  return_list=True)
 test_dataloader = DataLoader(test_dataset, batch_size=2, shuffle=False, collate_fn = collate_context_bert_test, return_list=True)
