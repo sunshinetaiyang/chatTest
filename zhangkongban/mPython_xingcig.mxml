@@ -1,0 +1,237 @@
+<!--mPythonType:0-->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="CdcAKBL!qe3dI[F%RlhP">x</variable>
+    <variable id="!%f8{-=){G4s|}CBp$p+">y</variable>
+  </variables>
+  <block type="mpython_main" id="(3xB@{i5h[xPB(,i(ACX" x="-38" y="-513">
+    <next>
+      <block type="procedures_callnoreturn" id="k@AMcn76c(~=PbkUNe`v">
+        <mutation name="light_sensor"></mutation>
+      </block>
+    </next>
+  </block>
+  <block type="procedures_defnoreturn" id="UwLtOg^HFuQsRx^jvEg0" x="212" y="-387">
+    <field name="NAME">light_sensor</field>
+    <statement name="STACK">
+      <block type="controls_repeat_forever" id=")[0Kaj1U@WqH)Y`-kcx%">
+        <statement name="DO">
+          <block type="controls_if" id="e{,Om.4PdMelS8m#^@L/">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+              <block type="logic_compare" id="*bR8=9i-Rjj_Z9RM(YqE">
+                <field name="OP">LT</field>
+                <value name="A">
+                  <block type="mpython_read_light" id=".@_+REa4!+QfDa=p%qf="></block>
+                </value>
+                <value name="B">
+                  <block type="math_number" id="DGtE|Dlxq46B`S^9gynf">
+                    <field name="NUM">50</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="mpython_set_rgb_list_color" id="~D[ZZ$cWCNsv%N4sQG9y">
+                <field name="COLOUR">#3333ff</field>
+                <value name="num">
+                  <shadow type="mpython_rgb_list" id="6y=F+dqvHwyaoAC_|whY">
+                    <field name="rgb_list">-1</field>
+                  </shadow>
+                </value>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="mpython_off_rgb_list" id="_J~J-E}-yG8A27P3?c),">
+                <value name="num">
+                  <shadow type="mpython_rgb_list" id="att+^kAC0zZHzK^Sw1@Y">
+                    <field name="rgb_list">-1</field>
+                  </shadow>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="LVY7tA-[62uJ(8.iD9w7" x="-87" y="-137">
+    <field name="NAME">slip_ball</field>
+    <statement name="STACK">
+      <block type="variables_set" id="V~TFjrxu:j3nSu6x^wBt">
+        <field name="VAR" id="CdcAKBL!qe3dI[F%RlhP">x</field>
+        <value name="VALUE">
+          <block type="math_number" id="DyZa7D0kAoqHRZ}JL/zg">
+            <field name="NUM">64</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="qi+w1+9O7M]2f?h%Y6co">
+            <field name="VAR" id="!%f8{-=){G4s|}CBp$p+">y</field>
+            <value name="VALUE">
+              <block type="math_number" id="[)=/#j;`h|R3`lc?{Lt.">
+                <field name="NUM">32</field>
+              </block>
+            </value>
+            <next>
+              <block type="controls_repeat_forever" id="HefwWK+.Q~MPG+f_r!^0">
+                <statement name="DO">
+                  <block type="mpython_display_fill" id="$xqcaD)wTdQhzkMv[:bO">
+                    <field name="display_fill">fill(0)</field>
+                    <next>
+                      <block type="mpython_display_shape_circle" id="TaY/}$[s!X@ngag#};+d">
+                        <field name="state">1</field>
+                        <field name="shape">fill_circle</field>
+                        <value name="x">
+                          <shadow type="math_number" id=",#ez;RCx{gmn!mAqWh60">
+                            <field name="NUM">64</field>
+                          </shadow>
+                          <block type="variables_get" id="-%/(Yv]no6z^B(}(u8f@">
+                            <field name="VAR" id="CdcAKBL!qe3dI[F%RlhP">x</field>
+                          </block>
+                        </value>
+                        <value name="y">
+                          <shadow type="math_number" id="U3K|eMSmNKSz~J9+N+*s">
+                            <field name="NUM">32</field>
+                          </shadow>
+                          <block type="variables_get" id="TOv9S}6Z*_yrpMuZZ0w2">
+                            <field name="VAR" id="!%f8{-=){G4s|}CBp$p+">y</field>
+                          </block>
+                        </value>
+                        <value name="radius">
+                          <shadow type="math_number" id="o?r#~5e^Jc,Sd9x=}0m*">
+                            <field name="NUM">15</field>
+                          </shadow>
+                        </value>
+                        <next>
+                          <block type="mpython_display_Show" id=":c(JM;v_#}CK7?.,]rsj">
+                            <next>
+                              <block type="controls_if" id="o%ZoQcp=.dy:5AbJ2BYz">
+                                <value name="IF0">
+                                  <block type="logic_compare" id="C;*%ee{^hX=/vE]y4DWZ">
+                                    <field name="OP">GTE</field>
+                                    <value name="A">
+                                      <block type="mpython_tilt_angle" id="1:_RxGxMt`O1w8b4,(##">
+                                        <field name="axis">X</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="math_number" id="_[y2}geIO$aCYqY)r)aC">
+                                        <field name="NUM">5</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO0">
+                                  <block type="math_change" id="V;[g3iab=m+SAd4rXvHB">
+                                    <field name="VAR" id="!%f8{-=){G4s|}CBp$p+">y</field>
+                                    <value name="DELTA">
+                                      <shadow type="math_number" id="XsX),=14IYR]uxhhRH]5">
+                                        <field name="NUM">1</field>
+                                      </shadow>
+                                    </value>
+                                  </block>
+                                </statement>
+                                <next>
+                                  <block type="controls_if" id="T=^4]=Lo:F7:5J0N)i:c">
+                                    <value name="IF0">
+                                      <block type="logic_compare" id="|G#`HBbm[888$B4S%Mjz">
+                                        <field name="OP">LTE</field>
+                                        <value name="A">
+                                          <block type="mpython_tilt_angle" id="P#zAUFp@BK$~dFtt;[iN">
+                                            <field name="axis">X</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block type="math_number" id="tsM+.E.tADb#6B7I=$73">
+                                            <field name="NUM">-5</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <statement name="DO0">
+                                      <block type="math_change" id="6.OK+DZ9+252n$^5b[oK">
+                                        <field name="VAR" id="!%f8{-=){G4s|}CBp$p+">y</field>
+                                        <value name="DELTA">
+                                          <shadow type="math_number" id="-`h%^_vqWX2q3]IC[BBH">
+                                            <field name="NUM">-1</field>
+                                          </shadow>
+                                        </value>
+                                      </block>
+                                    </statement>
+                                    <next>
+                                      <block type="controls_if" id="6Z@S=KV7AHEj~QQ?^2h^">
+                                        <value name="IF0">
+                                          <block type="logic_compare" id="x?]-r?StAbX%z1^7utsE">
+                                            <field name="OP">GTE</field>
+                                            <value name="A">
+                                              <block type="mpython_tilt_angle" id="?u$X$BdAj@7,q1$4aKH-">
+                                                <field name="axis">Z</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="4lVIR(:UHP:RFvpcU/Fx">
+                                                <field name="NUM">5</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO0">
+                                          <block type="math_change" id="K13A=*2RTcv{xl,d-_C[">
+                                            <field name="VAR" id="CdcAKBL!qe3dI[F%RlhP">x</field>
+                                            <value name="DELTA">
+                                              <shadow type="math_number" id="0OzLkO^{k`GQr`8wsmGn">
+                                                <field name="NUM">1</field>
+                                              </shadow>
+                                            </value>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="controls_if" id="5*whD-$uC#glH-h1b_$[">
+                                            <value name="IF0">
+                                              <block type="logic_compare" id="266dy}@c6[cQ:WV5XQC-">
+                                                <field name="OP">LTE</field>
+                                                <value name="A">
+                                                  <block type="mpython_tilt_angle" id="k)!%LH+nnvE}Zg3gv_c4">
+                                                    <field name="axis">Z</field>
+                                                  </block>
+                                                </value>
+                                                <value name="B">
+                                                  <block type="math_number" id="fvPBm)byV7f,D]op0o#G">
+                                                    <field name="NUM">-5</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <statement name="DO0">
+                                              <block type="math_change" id="grNEf(.-M)Ahw-:kE4:a">
+                                                <field name="VAR" id="CdcAKBL!qe3dI[F%RlhP">x</field>
+                                                <value name="DELTA">
+                                                  <shadow type="math_number" id="ENis|Az*+37{.:yTd2{t">
+                                                    <field name="NUM">-1</field>
+                                                  </shadow>
+                                                </value>
+                                              </block>
+                                            </statement>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>
